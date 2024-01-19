@@ -1,22 +1,33 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:student_analytics/data_models/teacher_model.dart';
-import '../widgets/text_field.dart';
+import 'package:provider/provider.dart';
+import 'package:student_analytics/data_models/subject_model.dart';
+import 'package:student_analytics/main.dart';
+import 'package:student_analytics/widgets/snack_bar.dart';
+import 'package:student_analytics/widgets/text_field.dart';
 
-TextEditingController controller = TextEditingController();
-ValueNotifier<bool> addSubjectButtonLoadingNotifier = ValueNotifier(false);
+ValueNotifier<bool> addSubjectButtonNotifier = ValueNotifier(false);
+TextEditingController courseCodeController = TextEditingController();
+TextEditingController courseNameController = TextEditingController();
+TextEditingController semesterController = TextEditingController();
 
-class TeacherAddSubject extends StatelessWidget {
-	TeacherAddSubject({super.key, required this.teacherData});
 
-	final TeacherModel teacherData;
-	final GlobalKey _addSubjectFormKey = GlobalKey<FormState>();
+class AddSubject extends StatelessWidget {
+	AddSubject({super.key, required this.teacherName, required this.teacherId});
+
+	final String teacherName;
+	final String teacherId;
+
+	final GlobalKey<FormState> _addSubjectFormkey = GlobalKey<FormState>();
 
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
 				backgroundColor: Colors.deepPurpleAccent,
-				title: const Text('Add Student'),
+				title: const Text('Add Subject'),
 			),
 			backgroundColor: Colors.deepPurpleAccent,
 			body: SafeArea(
@@ -24,13 +35,13 @@ class TeacherAddSubject extends StatelessWidget {
 					child: SingleChildScrollView(
 						child: Container(
 							padding: const EdgeInsets.all(20),
-							margin: const EdgeInsets.all(20),
+							margin: const EdgeInsets.all(10),
 							decoration: BoxDecoration(
 								color: Colors.white,
 								borderRadius: BorderRadius.circular(20)
 							),
 							child: Form(
-								key: _addSubjectFormKey,
+								key: _addSubjectFormkey,
 								child: Column(
 									mainAxisSize: MainAxisSize.min,
 									children: [
@@ -43,18 +54,26 @@ class TeacherAddSubject extends StatelessWidget {
 										),
 										const SizedBox(height: 20,),
 										CustomTextField(
-											labelText: 'Subject Name', 
-											prefixIcon: Icons.subject, 
-											controller: controller, 
+											labelText: 'Course code', 
+											prefixIcon: Icons.numbers, 
+											keyboardType: TextInputType.number,
+											controller: courseCodeController, 
 											validator: (input) {
+												final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
+												if(input!.trim() == '') {
+													return 'Id is required';
+												}
+												else if(!numberCheckRegex.hasMatch(input)) {
+													return 'Invalid Id';
+												}
 												return null;
 											},
 										),
 										const SizedBox(height: 10,),
 										CustomTextField(
-											labelText: 'Course Code', 
-											prefixIcon: Icons.abc_sharp, 
-											controller: controller, 
+											labelText: 'Course name', 
+											prefixIcon: Icons.insert_drive_file, 
+											controller: courseNameController, 
 											validator: (input) {
 												if(input!.trim() == '') {
 													return 'Name is required';
@@ -65,12 +84,12 @@ class TeacherAddSubject extends StatelessWidget {
 										const SizedBox(height: 10,),
 										CustomTextField(
 											labelText: 'Semester', 
-											prefixIcon: Icons.numbers, 
-											controller: controller, 
-											keyboardType: TextInputType.number,
+											prefixIcon: Icons.email, 
+											controller: semesterController, 
+											keyboardType: TextInputType.none,
 											validator: (input) {
 												if(input!.trim() == '') {
-													return 'Phone number is required';
+													return 'Name is required';
 												}
 												return null;
 											},
@@ -89,9 +108,12 @@ class TeacherAddSubject extends StatelessWidget {
 														borderRadius: BorderRadius.circular(30),
 													)
 												),
-												onPressed: () => {},
+												onPressed: () {
+													// addSubjecttofirebase(context);
+													// addSubject(context);
+												},
 												child: ValueListenableBuilder(
-													valueListenable: addSubjectButtonLoadingNotifier,
+													valueListenable: addSubjectButtonNotifier,
 													builder: (context, value, child) {
 														if(value) {
 															return const SizedBox(
@@ -113,6 +135,7 @@ class TeacherAddSubject extends StatelessWidget {
 															);
 														}
 													},
+                          
 												)
 											),
 										),
@@ -126,4 +149,146 @@ class TeacherAddSubject extends StatelessWidget {
 			),
 		);
 	}
+
+	void addSubject(BuildContext context) async {
+		addSubjectButtonNotifier.value = true;
+		await Future.delayed(const Duration(seconds: 2));
+		addSubjectButtonNotifier.value = false;
+	}
+
+	// Future<void> addSubjecttofirebase(BuildContext context) async {
+ 
+	// 	if(_addSubjectFormkey.currentState!.validate()) {
+     
+	// 	// 	try {
+	// 	// 		final isExisting = await FirebaseFirestore.instance.collection('students').doc(student.regNo).get();
+	// 	// 		if(isExisting.exists) {
+	// 	// 			//showTheAlertDialog(context, regNoController.text.trim());
+	// 	// 		}
+	// 	// 		else {
+	// 	// 			await FirebaseFirestore.instance.collection('students').doc(student.regNo).set(studentData);
+	// 	// 			showSnackBar(
+	// 	// 				context: context, 
+	// 	// 				message: '  Student added', 
+	// 	// 				icon: const Icon(Icons.done_outline, color: Colors.green,), 
+	// 	// 				duration: 2
+	// 	// 			);
+	// 	// 			Provider.of<StudentsProvider>(context, listen: false).addTeacher(student);
+	// 	// 			_addTeacherFormkey.currentState!.reset();
+
+	// 	// 			// addUserAuth(student.email);
+	// 	// 		}
+	// 	// 	}
+	// 	// 	catch(err) {
+	// 	// 		sss(err);
+	// 	// 		showSnackBar(
+	// 	// 			context: context, 
+	// 	// 			message: '  Operation failed! try again', 
+	// 	// 			icon: const Icon(Icons.feedback, color: Colors.red,), 
+	// 	// 			duration: 2
+	// 	// 		);
+	// 	// 	}
+	// 	// 	finally {
+	// 	// 		addTeacherButtonLoadingNotifier.value = false;
+	// 	// 	}
+			
+	// 		addSubjectButtonNotifier.value = true;
+	// 		 final SubjectModel subjectModel =SubjectModel(subjectId:teacherId , teacherName: teacherName, courseCode: courseCodeController.text.trim(), semester: semesterController.text.trim(), subjectName: courseNameController.text.trim());
+    //   // TeacherModel(
+	// 		// 	teacherId: teacherIdController.text.trim(),
+	// 		// 	name: nameController.text.trim(),
+	// 		// 	email: emailController.text.trim(),
+	// 		// 	phoneNumber: phoneNumberController.text.trim()
+	// 		// );
+	// 		final subjectData = subjectModel.toMap();
+	// 		try {
+	// 			final subjExists = await FirebaseFirestore.instance.collection('subjects').doc(subjectModel.subjectName).get();
+	// 			if(subjExists.exists) {
+	// 				showTheAlertDialog(context, subjectModel.subjectName, subjectModel);
+	// 			}
+	// 			else {
+	// 				await FirebaseFirestore.instance.collection('subjects').doc().set(subjectData);
+	// 				showSnackBar(
+	// 					context: context, 
+	// 					message: '  Teacher added', 
+	// 					icon: const Icon(Icons.done_outline, color: Colors.green,), 
+	// 					duration: 2
+	// 				);
+	// 				Provider.of<SubjectProvider>(context, listen: false).AddSubject(subjectModel);
+	// 				_addSubjectFormkey.currentState!.reset();
+
+				
+	// 			}
+	// 		}
+	// 		catch(err) {
+	// 			sss(err);
+	// 			showSnackBar(
+	// 				context: context, 
+	// 				message: '  Operation failed! try again', 
+	// 				icon: const Icon(Icons.feedback, color: Colors.red,), 
+	// 				duration: 2
+	// 			);
+	// 		}
+	// 		finally {
+	// 			addSubjectButtonNotifier.value = false;
+	// 		}
+	// 	}
+	// }
+
+	// Future<void> showTheAlertDialog(BuildContext context, String email, SubjectModel subjectModel) {
+	// 	return showDialog(
+	// 		context: context, 
+	// 		builder: (context) {
+	// 			return AlertDialog(
+	// 				icon: const Icon(Icons.info),
+	// 				content: ConstrainedBox(
+	// 					constraints: const BoxConstraints(
+	// 						maxWidth: 200
+	// 					),
+	// 					child: Text(
+	// 						"Teacher with email $email already exists. Click 'SAVE' to replace exisiting data",
+	// 						textAlign: TextAlign.center,
+	// 					),
+	// 				),
+	// 				actionsAlignment: MainAxisAlignment.spaceAround,
+	// 				actions: [
+	// 					ElevatedButton(
+	// 						onPressed: () async {
+	// 							await FirebaseFirestore.instance.collection('teachers').doc().set(subjectModel.toMap());
+	// 							showSnackBar(
+	// 								context: context, 
+	// 								message: '  Subject added', 
+	// 								icon: const Icon(Icons.done_outline, color: Colors.green,), 
+	// 								duration: 2
+	// 							);
+	// 							Provider.of<SubjectProvider>(context, listen: false).AddSubject(subjectModel);
+	// 							_addSubjectFormkey.currentState!.reset();
+
+							
+	// 						},
+	// 						child: const Text('Save')
+	// 					),
+	// 					ElevatedButton(
+	// 						onPressed: () {
+	// 							Navigator.pop(context);
+	// 						},
+	// 						child: const Text('Discard')
+	// 					),
+	// 				],
+	// 			);
+	// 		}
+	// 	);
+	// }
+
+  
 }
+
+// Future<void>addSubject(){
+
+//   try {
+    
+//   } catch (e) {
+  
+//   }
+  
+// }

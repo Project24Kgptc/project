@@ -5,7 +5,7 @@ class CustomTextField extends StatelessWidget {
 		super.key, 
 		this.hintText, 
 		this.suffixIcon,
-		this.obscureText, 
+		this.obscureText = false, 
 		this.keyboardType, 
 		required this.labelText, 
 		required this.prefixIcon, 
@@ -14,7 +14,7 @@ class CustomTextField extends StatelessWidget {
 	});
 
 	final TextInputType? keyboardType;
-	final bool? obscureText;
+	final bool obscureText;
 	final String? hintText;
 	final String labelText;
 	final IconData prefixIcon;
@@ -25,7 +25,7 @@ class CustomTextField extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return TextFormField(
-			obscureText: obscureText ?? false,
+			obscureText: obscureText,
 			controller: controller,
 			keyboardType: keyboardType,
 			validator: validator,

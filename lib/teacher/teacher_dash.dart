@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
-import 'package:student_analytics/teacher/add_subject.dart';
+import 'package:student_analytics/teacher/add_subject_old.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class TeacherDashboard extends StatelessWidget {

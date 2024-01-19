@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "29145780125",
+    "project_id": "student-analytics-24",
+    "storage_bucket": "student-analytics-24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29145780125:android:0da425a3bcd39a550a2974",
+        "android_client_info": {
+          "package_name": "com.example.student_analytics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGMJEZWye2hR97n4fpJkva-S6lXhBBq5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

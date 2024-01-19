@@ -299,7 +299,7 @@ class LoginPage extends StatelessWidget {
 				final UserCredential userCredential = await auth.signInWithEmailAndPassword(
 					email: emailController.text.trim(),
 					password: passwordController.text.trim()
-				);
+				);print(userCredential);
 
 				final teacherData = await FirebaseFirestore.instance.collection('teachers').doc(userCredential.user!.email!.replaceAll('@mail.com', '')).get();
 				if(teacherData.exists) {

@@ -44,37 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAIVd-GMeOyH0MdNDQxvl80rVMj7EjGiEE',
-    appId: '1:29145780125:web:bfb8383a3a1cc5c00a2974',
-    messagingSenderId: '29145780125',
-    projectId: 'student-analytics-24',
-    authDomain: 'student-analytics-24.firebaseapp.com',
-    storageBucket: 'student-analytics-24.appspot.com',
+    apiKey: 'AIzaSyBhk-lxz35DpLt07UCJLUkIfwo7cCD7EQc',
+    appId: '1:173957862218:web:dba26082f1b2ba54df67b3',
+    messagingSenderId: '173957862218',
+    projectId: 'student-analytics-263',
+    authDomain: 'student-analytics-263.firebaseapp.com',
+    storageBucket: 'student-analytics-263.appspot.com',
+    measurementId: 'G-BM8E5WX1FS',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDGMJEZWye2hR97n4fpJkva-S6lXhBBq5g',
-    appId: '1:29145780125:android:0da425a3bcd39a550a2974',
-    messagingSenderId: '29145780125',
-    projectId: 'student-analytics-24',
-    storageBucket: 'student-analytics-24.appspot.com',
+    apiKey: 'AIzaSyB6UJEJq7GUbXpXQpz2YDckcoYqauZkhlk',
+    appId: '1:173957862218:android:db1634ede07cf524df67b3',
+    messagingSenderId: '173957862218',
+    projectId: 'student-analytics-263',
+    storageBucket: 'student-analytics-263.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAWKjg9lmMRd6OMOMMjd_Ev5Oodubp1sDc',
-    appId: '1:29145780125:ios:47c9f8e7770b77920a2974',
-    messagingSenderId: '29145780125',
-    projectId: 'student-analytics-24',
-    storageBucket: 'student-analytics-24.appspot.com',
+    apiKey: 'AIzaSyDXVsUxG1XRJxrbB7dhYolBbmA1_XwWgmI',
+    appId: '1:173957862218:ios:09cd43fd4c34fc28df67b3',
+    messagingSenderId: '173957862218',
+    projectId: 'student-analytics-263',
+    storageBucket: 'student-analytics-263.appspot.com',
     iosBundleId: 'com.example.studentAnalytics',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAWKjg9lmMRd6OMOMMjd_Ev5Oodubp1sDc',
-    appId: '1:29145780125:ios:8dbb0ba71d40a6250a2974',
-    messagingSenderId: '29145780125',
-    projectId: 'student-analytics-24',
-    storageBucket: 'student-analytics-24.appspot.com',
+    apiKey: 'AIzaSyDXVsUxG1XRJxrbB7dhYolBbmA1_XwWgmI',
+    appId: '1:173957862218:ios:ed95e484b0e24a96df67b3',
+    messagingSenderId: '173957862218',
+    projectId: 'student-analytics-263',
+    storageBucket: 'student-analytics-263.appspot.com',
     iosBundleId: 'com.example.studentAnalytics.RunnerTests',
   );
 }
