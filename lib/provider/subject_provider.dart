@@ -6,22 +6,22 @@ class SubjectProvider extends ChangeNotifier {
 	bool _isLoading = true;
 	bool get isLoading => _isLoading;
 
-	List<SubjectModel> subjects = [];
-	List<SubjectModel> get subject => subjects;
+	List<SubjectModel> _subjects = [];
+	List<SubjectModel> get subjects => _subjects;
 
 	// void setLoading(bool value) {
 	// 	_isLoading = value;
 	// 	notifyListeners();
 	// }
 
-	void setAllTeachersData(List<SubjectModel> subject) {
-		subjects = subject;
+	void setAllSubjectsData(List<SubjectModel> subject) {
+		_subjects = subject;
 		_isLoading = false;
 		notifyListeners();
 	}
 
 	void addSubject(SubjectModel sub) {
-		subjects.add(sub);
+		_subjects.add(sub);
 		notifyListeners();
 	}
 }

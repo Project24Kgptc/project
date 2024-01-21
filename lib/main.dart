@@ -6,6 +6,7 @@ import 'package:student_analytics/auth/auth_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:student_analytics/provider/subject_provider.dart';
 import 'package:student_analytics/provider/teachers_provider.dart';
 
 void main() async {
@@ -16,8 +17,9 @@ void main() async {
 	runApp(
 		MultiProvider(
 			providers: [
-				ChangeNotifierProvider(create: (context) => TeachersProvider()),
+				ChangeNotifierProvider(create: (context) => SubjectProvider()),
 				ChangeNotifierProvider(create: (context) => StudentsProvider()),
+				ChangeNotifierProvider(create: (context) => TeachersProvider()),
 				ChangeNotifierProvider(create: (context) => AttendanceProvider()),
 				ChangeNotifierProvider(create: (context) => StudentsBatchProvider()),
 			],

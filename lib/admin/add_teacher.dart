@@ -27,7 +27,7 @@ class AddTeacher extends StatelessWidget {
 		return Scaffold(
 			appBar: AppBar(
 				backgroundColor: Colors.deepPurpleAccent,
-				title: const Text('Add Student'),
+				title: const Text('Add Teacher'),
 			),
 			backgroundColor: Colors.deepPurpleAccent,
 			body: SafeArea(
@@ -257,7 +257,7 @@ class AddTeacher extends StatelessWidget {
 		final auth = FirebaseAuth.instance;
 		await auth.createUserWithEmailAndPassword(
 			email: email,
-			password: '123456'
+			password: '111111'
 		);
 		await FirebaseAuth.instance.signOut();
 	}

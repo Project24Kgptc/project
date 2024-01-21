@@ -3,10 +3,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:student_analytics/admin/admin_dash.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
+import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
+import 'package:student_analytics/provider/subject_provider.dart';
 import 'package:student_analytics/student/std_dash.dart';
 import 'package:student_analytics/teacher/teacher_dash.dart';
 
@@ -48,6 +51,11 @@ class AuthScreen extends StatelessWidget {
 			if(teacherData.exists) {
 				final TeacherModel teacherModel = TeacherModel.fromMaptoObject(teacherData.data()!);
 				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => TeacherDashboard(teacherData: teacherModel)));
+				
+				final subjects = await FirebaseFirestore.instance.collection('subjects').where('teacherId', isEqualTo: teacherModel.teacherId).get();
+				await Future.delayed(const Duration(microseconds: 100));
+				final List<SubjectModel> subjectObjectsList = subjects.docs.map((subject) => SubjectModel.fromMaptoObject(subject.data())).toList();
+				Provider.of<SubjectProvider>(context, listen: false).setAllSubjectsData(subjectObjectsList);
 				return;
 			}
 			final adminData = await FirebaseFirestore.instance.collection('admins').doc(user.email!.replaceAll('@mail.com', '')).get();

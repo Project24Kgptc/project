@@ -1,23 +1,28 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/provider/subject_provider.dart';
+import 'package:student_analytics/widgets/alert_dialog.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 import 'package:student_analytics/widgets/text_field.dart';
 
 ValueNotifier<bool> addSubjectButtonNotifier = ValueNotifier(false);
+ValueNotifier<String> batchDropDownNotifier = ValueNotifier('');
+
 TextEditingController courseCodeController = TextEditingController();
 TextEditingController courseNameController = TextEditingController();
 TextEditingController semesterController = TextEditingController();
-
+String? batchDropDownController;
 
 class AddSubject extends StatelessWidget {
-	AddSubject({super.key, required this.teacherName, required this.teacherId});
+	AddSubject({super.key, required this.teacherName, required this.teacherId, required this.batchesList});
 
+	final FocusNode _dropdownFocus = FocusNode();
 	final String teacherName;
+	final List<String> batchesList;
 	final String teacherId;
 
 	final GlobalKey<FormState> _addSubjectFormkey = GlobalKey<FormState>();
@@ -59,12 +64,8 @@ class AddSubject extends StatelessWidget {
 											keyboardType: TextInputType.number,
 											controller: courseCodeController, 
 											validator: (input) {
-												final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
 												if(input!.trim() == '') {
-													return 'Id is required';
-												}
-												else if(!numberCheckRegex.hasMatch(input)) {
-													return 'Invalid Id';
+													return 'Course code is required';
 												}
 												return null;
 											},
@@ -76,7 +77,7 @@ class AddSubject extends StatelessWidget {
 											controller: courseNameController, 
 											validator: (input) {
 												if(input!.trim() == '') {
-													return 'Name is required';
+													return 'Course name is required';
 												}
 												return null;
 											},
@@ -88,11 +89,58 @@ class AddSubject extends StatelessWidget {
 											controller: semesterController, 
 											keyboardType: TextInputType.none,
 											validator: (input) {
+												final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
 												if(input!.trim() == '') {
-													return 'Name is required';
+													return 'Semester is required';
+												}
+												else if(!numberCheckRegex.hasMatch(input)) {
+													return 'Invalid semester';
 												}
 												return null;
 											},
+										),
+										const SizedBox(height: 10,),
+										DropdownButtonFormField<String>(
+											focusNode: _dropdownFocus,
+											decoration: InputDecoration(
+												labelText: 'Select Batch',
+												prefixIcon: const Icon(Icons.batch_prediction),
+												prefixIconColor: MaterialStateColor.resolveWith((states) {
+													return states.contains(MaterialState.focused) ? Colors.deepPurpleAccent : Colors.black;
+												}),
+												floatingLabelStyle: const TextStyle(
+													color: Colors.deepPurpleAccent
+												),
+												border: OutlineInputBorder(
+													borderSide: const BorderSide(
+														color: Colors.black,
+													),
+													borderRadius: BorderRadius.circular(30)
+												),
+												enabledBorder: OutlineInputBorder(
+													borderSide: const BorderSide(
+														color: Colors.black,
+													),
+													borderRadius: BorderRadius.circular(30)
+												),
+												focusedBorder: OutlineInputBorder(
+													borderSide: const BorderSide(
+														color: Colors.deepPurpleAccent,
+													),
+													borderRadius: BorderRadius.circular(30)
+												),
+											),
+											items: batchesList.map((String value) {
+												return DropdownMenuItem<String>(
+													value: value,
+													child: Text(value),
+												);
+											}).toList(),
+											onChanged: (String? value) {
+												batchDropDownController = value;
+											},
+											value: batchDropDownController,
+											validator: (value) => value == null ? "Select batch" : null
 										),
 										const SizedBox(height: 20,),
 										Container(
@@ -108,10 +156,7 @@ class AddSubject extends StatelessWidget {
 														borderRadius: BorderRadius.circular(30),
 													)
 												),
-												onPressed: () {
-													// addSubjecttofirebase(context);
-													// addSubject(context);
-												},
+												onPressed: () => addSubject(context),
 												child: ValueListenableBuilder(
 													valueListenable: addSubjectButtonNotifier,
 													builder: (context, value, child) {
@@ -152,143 +197,64 @@ class AddSubject extends StatelessWidget {
 
 	void addSubject(BuildContext context) async {
 		addSubjectButtonNotifier.value = true;
-		await Future.delayed(const Duration(seconds: 2));
+		if(_addSubjectFormkey.currentState!.validate()) {
+			final String subjectId = '${courseCodeController.text}-${batchDropDownController!}'; // eg. 4131-2021-24
+			final subjectModel = SubjectModel(
+				subjectId: subjectId,
+				teacherId: teacherId,
+				teacherName: teacherName,
+				courseCode: courseCodeController.text,
+				semester: semesterController.text,
+				subjectName: courseNameController.text,
+				batch: batchDropDownController!
+			);
+			try {
+				final isExisting = await FirebaseFirestore.instance.collection('subjects').doc(subjectId).get();
+				if(isExisting.exists) {
+					customAlertDialog(
+						context: context,
+						messageText: 'Subject with code ${subjectModel.courseCode} already exists for batch ${subjectModel.batch}',
+						primaryButtonText: 'Back',
+						isSecondButtonVisible: false,
+						onPrimaryButtonClick: () => Navigator.of(context).pop(),
+					);
+				}
+				else {
+					addSUbjectToStudents(subjectModel.subjectId, subjectModel.batch);
+					await FirebaseFirestore.instance.collection('subjects').doc(subjectModel.subjectId).set(subjectModel.toMap());
+					showSnackBar(
+						context: context, 
+						message: '  Subject added', 
+						icon: const Icon(Icons.done_outline, color: Colors.green,), 
+						duration: 2
+					);
+					Provider.of<SubjectProvider>(context, listen: false).addSubject(subjectModel);
+					_addSubjectFormkey.currentState!.reset();
+				}
+			}
+			catch(err) {
+				sss(err);
+				showSnackBar(
+					context: context, 
+					message: '  Operation failed! try again', 
+					icon: const Icon(Icons.feedback, color: Colors.red,), 
+					duration: 2
+				);
+			}
+			finally {
+				addSubjectButtonNotifier.value = false;
+			}
+		}
 		addSubjectButtonNotifier.value = false;
 	}
 
-	// Future<void> addSubjecttofirebase(BuildContext context) async {
- 
-	// 	if(_addSubjectFormkey.currentState!.validate()) {
-     
-	// 	// 	try {
-	// 	// 		final isExisting = await FirebaseFirestore.instance.collection('students').doc(student.regNo).get();
-	// 	// 		if(isExisting.exists) {
-	// 	// 			//showTheAlertDialog(context, regNoController.text.trim());
-	// 	// 		}
-	// 	// 		else {
-	// 	// 			await FirebaseFirestore.instance.collection('students').doc(student.regNo).set(studentData);
-	// 	// 			showSnackBar(
-	// 	// 				context: context, 
-	// 	// 				message: '  Student added', 
-	// 	// 				icon: const Icon(Icons.done_outline, color: Colors.green,), 
-	// 	// 				duration: 2
-	// 	// 			);
-	// 	// 			Provider.of<StudentsProvider>(context, listen: false).addTeacher(student);
-	// 	// 			_addTeacherFormkey.currentState!.reset();
-
-	// 	// 			// addUserAuth(student.email);
-	// 	// 		}
-	// 	// 	}
-	// 	// 	catch(err) {
-	// 	// 		sss(err);
-	// 	// 		showSnackBar(
-	// 	// 			context: context, 
-	// 	// 			message: '  Operation failed! try again', 
-	// 	// 			icon: const Icon(Icons.feedback, color: Colors.red,), 
-	// 	// 			duration: 2
-	// 	// 		);
-	// 	// 	}
-	// 	// 	finally {
-	// 	// 		addTeacherButtonLoadingNotifier.value = false;
-	// 	// 	}
-			
-	// 		addSubjectButtonNotifier.value = true;
-	// 		 final SubjectModel subjectModel =SubjectModel(subjectId:teacherId , teacherName: teacherName, courseCode: courseCodeController.text.trim(), semester: semesterController.text.trim(), subjectName: courseNameController.text.trim());
-    //   // TeacherModel(
-	// 		// 	teacherId: teacherIdController.text.trim(),
-	// 		// 	name: nameController.text.trim(),
-	// 		// 	email: emailController.text.trim(),
-	// 		// 	phoneNumber: phoneNumberController.text.trim()
-	// 		// );
-	// 		final subjectData = subjectModel.toMap();
-	// 		try {
-	// 			final subjExists = await FirebaseFirestore.instance.collection('subjects').doc(subjectModel.subjectName).get();
-	// 			if(subjExists.exists) {
-	// 				showTheAlertDialog(context, subjectModel.subjectName, subjectModel);
-	// 			}
-	// 			else {
-	// 				await FirebaseFirestore.instance.collection('subjects').doc().set(subjectData);
-	// 				showSnackBar(
-	// 					context: context, 
-	// 					message: '  Teacher added', 
-	// 					icon: const Icon(Icons.done_outline, color: Colors.green,), 
-	// 					duration: 2
-	// 				);
-	// 				Provider.of<SubjectProvider>(context, listen: false).AddSubject(subjectModel);
-	// 				_addSubjectFormkey.currentState!.reset();
-
-				
-	// 			}
-	// 		}
-	// 		catch(err) {
-	// 			sss(err);
-	// 			showSnackBar(
-	// 				context: context, 
-	// 				message: '  Operation failed! try again', 
-	// 				icon: const Icon(Icons.feedback, color: Colors.red,), 
-	// 				duration: 2
-	// 			);
-	// 		}
-	// 		finally {
-	// 			addSubjectButtonNotifier.value = false;
-	// 		}
-	// 	}
-	// }
-
-	// Future<void> showTheAlertDialog(BuildContext context, String email, SubjectModel subjectModel) {
-	// 	return showDialog(
-	// 		context: context, 
-	// 		builder: (context) {
-	// 			return AlertDialog(
-	// 				icon: const Icon(Icons.info),
-	// 				content: ConstrainedBox(
-	// 					constraints: const BoxConstraints(
-	// 						maxWidth: 200
-	// 					),
-	// 					child: Text(
-	// 						"Teacher with email $email already exists. Click 'SAVE' to replace exisiting data",
-	// 						textAlign: TextAlign.center,
-	// 					),
-	// 				),
-	// 				actionsAlignment: MainAxisAlignment.spaceAround,
-	// 				actions: [
-	// 					ElevatedButton(
-	// 						onPressed: () async {
-	// 							await FirebaseFirestore.instance.collection('teachers').doc().set(subjectModel.toMap());
-	// 							showSnackBar(
-	// 								context: context, 
-	// 								message: '  Subject added', 
-	// 								icon: const Icon(Icons.done_outline, color: Colors.green,), 
-	// 								duration: 2
-	// 							);
-	// 							Provider.of<SubjectProvider>(context, listen: false).AddSubject(subjectModel);
-	// 							_addSubjectFormkey.currentState!.reset();
-
-							
-	// 						},
-	// 						child: const Text('Save')
-	// 					),
-	// 					ElevatedButton(
-	// 						onPressed: () {
-	// 							Navigator.pop(context);
-	// 						},
-	// 						child: const Text('Discard')
-	// 					),
-	// 				],
-	// 			);
-	// 		}
-	// 	);
-	// }
-
+	Future<void> addSUbjectToStudents(String subjectId, String batch) async {
+		final students = await FirebaseFirestore.instance.collection('students').where('batch', isEqualTo: batch).get();
+		for (var student in students.docs) {
+			final List subjectsList = student.data()['subjects'];
+			subjectsList.add(subjectId);
+			await FirebaseFirestore.instance.collection('students').doc(student.id).update({'subjects': subjectsList});
+		}
+	}
   
 }
-
-// Future<void>addSubject(){
-
-//   try {
-    
-//   } catch (e) {
-  
-//   }
-  
-// }

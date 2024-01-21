@@ -13,7 +13,7 @@ class AdminAllTeachersPage extends StatelessWidget {
 			backgroundColor: Colors.deepPurpleAccent,
 			appBar: AppBar(
 				backgroundColor: Colors.deepPurpleAccent,
-				title: const Text('Students'),
+				title: const Text('Teachers'),
 				actions: [
 					Padding(
 						padding: const EdgeInsets.all(10),

@@ -8,6 +8,7 @@ import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/provider/students_provider.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
+import '../widgets/alert_dialog.dart';
 import '../widgets/text_field.dart';
 
 ValueNotifier<bool> addStudentButtonLoadingNotifier = ValueNotifier(false);
@@ -229,54 +230,29 @@ class AddStudent extends StatelessWidget {
 			try {
 				final isExisting = await FirebaseFirestore.instance.collection('students').doc(student.regNo).get();
 				if(isExisting.exists) {
-					showDialog(
-						context: context, 
-						builder: (context) {
-							return AlertDialog(
-								icon: const Icon(Icons.warning_outlined),
-								content: ConstrainedBox(
-									constraints: const BoxConstraints(
-										maxWidth: 200
-									),
-									child: Text(
-										"Student with Register Number ${student.regNo} already exists. Click 'SAVE' to replace exisiting data",
-										textAlign: TextAlign.center,
-									),
-								),
-								actionsAlignment: MainAxisAlignment.spaceAround,
-								actionsPadding: const EdgeInsets.only(bottom: 20),
-								actions: [
-									ElevatedButton(
-										onPressed: () {
-											Navigator.pop(context);
-										},
-										style: ElevatedButton.styleFrom(
-											backgroundColor: Colors.black
-										),
-										child: const Text('Discard')
-									),
-									ElevatedButton(
-										onPressed: () async {
-											await FirebaseFirestore.instance.collection('students').doc(student.regNo).set(studentData);
-											showSnackBar(
-												context: context, 
-												message: '  Student updated', 
-												icon: const Icon(Icons.update, color: Colors.green,), 
-												duration: 2
-											);
-											Provider.of<StudentsProvider>(context, listen: false).addStudent(student);
-											_addStudentFormkey.currentState!.reset();
-											addUserAuth(student.email);
-											Navigator.of(context).pop();
-										},
-										style: ElevatedButton.styleFrom(
-											backgroundColor: Colors.black
-										),
-										child: const Text('  Save  ')
-									),
-								],
-							);
-						}
+					// customAlertDialog(
+					// 	context: context,
+					// 	messageText: "Student with Register Number ${student.regNo} already exists. Click 'SAVE' to replace exisiting data",
+					// 	onPrimaryButtonClick: () async {
+					// 		await FirebaseFirestore.instance.collection('students').doc(student.regNo).set(studentData);
+					// 		showSnackBar(
+					// 			context: context, 
+					// 			message: '  Student updated', 
+					// 			icon: const Icon(Icons.update, color: Colors.green,), 
+					// 			duration: 2
+					// 		);
+					// 		Provider.of<StudentsProvider>(context, listen: false).addStudent(student);
+					// 		_addStudentFormkey.currentState!.reset();
+					// 		addUserAuth(student.email);
+					// 		Navigator.of(context).pop();
+					// 	},
+					// );
+					customAlertDialog(
+						context: context,
+						messageText: "Student with Register Number ${student.regNo} already exists !",
+						onPrimaryButtonClick: () => Navigator.of(context).pop(),
+						primaryButtonText: 'Back',
+						isSecondButtonVisible: false
 					);
 				}
 				else {
@@ -308,46 +284,11 @@ class AddStudent extends StatelessWidget {
 		}
 	}
 
-	Future<void> showTheAlertDialog(BuildContext context, String regNo) {
-		return showDialog(
-			context: context, 
-			builder: (context) {
-				return AlertDialog(
-					icon: const Icon(Icons.info),
-					content: ConstrainedBox(
-						constraints: const BoxConstraints(
-							maxWidth: 200
-						),
-						child: Text(
-							"Student with Register Number $regNo already exists. Click 'SAVE' to replace exisiting data",
-							textAlign: TextAlign.center,
-						),
-					),
-					actionsAlignment: MainAxisAlignment.spaceAround,
-					actions: [
-						ElevatedButton(
-							onPressed: () {
-								Navigator.pop(context);
-							},
-							child: const Text('Save')
-						),
-						ElevatedButton(
-							onPressed: () {
-								Navigator.pop(context);
-							},
-							child: const Text('Discard')
-						),
-					],
-				);
-			}
-		);
-	}
-
 	Future<void> addUserAuth(String email) async {
 		final auth = FirebaseAuth.instance;
 		await auth.createUserWithEmailAndPassword(
 			email: email,
-			password: '123456'
+			password: '111111'
 		);
 		await FirebaseAuth.instance.signOut();
 	}
