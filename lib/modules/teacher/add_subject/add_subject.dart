@@ -4,29 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/teacher/add_subject/subject_validator.dart';
 import 'package:student_analytics/provider/subject_provider.dart';
 import 'package:student_analytics/widgets/alert_dialog.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 import 'package:student_analytics/widgets/text_field.dart';
 
-ValueNotifier<bool> addSubjectButtonNotifier = ValueNotifier(false);
-ValueNotifier<String> batchDropDownNotifier = ValueNotifier('');
 
-TextEditingController courseCodeController = TextEditingController();
-TextEditingController courseNameController = TextEditingController();
-TextEditingController semesterController = TextEditingController();
-String? batchDropDownController;
+
+
 
 class AddSubject extends StatelessWidget {
 	AddSubject({super.key, required this.teacherName, required this.teacherId, required this.batchesList});
-
+	
 	final FocusNode _dropdownFocus = FocusNode();
 	final String teacherName;
 	final List<String> batchesList;
 	final String teacherId;
 
 	final GlobalKey<FormState> _addSubjectFormkey = GlobalKey<FormState>();
+	final SubjectValidator _validator = SubjectValidator();
+	
+	final ValueNotifier<bool> addSubjectButtonNotifier = ValueNotifier(false);
+	final ValueNotifier<String> batchDropDownNotifier = ValueNotifier('');
 
+	final TextEditingController courseCodeController = TextEditingController();
+	final TextEditingController courseNameController = TextEditingController();
+	final TextEditingController semesterController = TextEditingController();
+	final TextEditingController batchDropDownController = TextEditingController();
+	
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
@@ -61,43 +67,22 @@ class AddSubject extends StatelessWidget {
 										CustomTextField(
 											labelText: 'Course code', 
 											prefixIcon: Icons.numbers, 
-											keyboardType: TextInputType.number,
 											controller: courseCodeController, 
-											validator: (input) {
-												if(input!.trim() == '') {
-													return 'Course code is required';
-												}
-												return null;
-											},
+											validator: _validator.courseCode,
 										),
 										const SizedBox(height: 10,),
 										CustomTextField(
 											labelText: 'Course name', 
 											prefixIcon: Icons.insert_drive_file, 
 											controller: courseNameController, 
-											validator: (input) {
-												if(input!.trim() == '') {
-													return 'Course name is required';
-												}
-												return null;
-											},
+											validator: _validator.courseName,
 										),
 										const SizedBox(height: 10,),
 										CustomTextField(
 											labelText: 'Semester', 
 											prefixIcon: Icons.email, 
 											controller: semesterController, 
-											keyboardType: TextInputType.none,
-											validator: (input) {
-												final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
-												if(input!.trim() == '') {
-													return 'Semester is required';
-												}
-												else if(!numberCheckRegex.hasMatch(input)) {
-													return 'Invalid semester';
-												}
-												return null;
-											},
+											validator: _validator.semester,
 										),
 										const SizedBox(height: 10,),
 										DropdownButtonFormField<String>(
@@ -137,10 +122,10 @@ class AddSubject extends StatelessWidget {
 												);
 											}).toList(),
 											onChanged: (String? value) {
-												batchDropDownController = value;
+												batchDropDownController.text = value ?? '';
 											},
-											value: batchDropDownController,
-											validator: (value) => value == null ? "Select batch" : null
+											value: batchDropDownController.text == '' ? null : batchDropDownController.text,
+											validator: _validator.batch
 										),
 										const SizedBox(height: 20,),
 										Container(
@@ -198,7 +183,7 @@ class AddSubject extends StatelessWidget {
 	void addSubject(BuildContext context) async {
 		addSubjectButtonNotifier.value = true;
 		if(_addSubjectFormkey.currentState!.validate()) {
-			final String subjectId = '${courseCodeController.text}-${batchDropDownController!}'; // eg. 4131-2021-24
+			final String subjectId = '${courseCodeController.text}-${batchDropDownController.text}'; // eg. 4131-2021-24
 			final subjectModel = SubjectModel(
 				subjectId: subjectId,
 				teacherId: teacherId,
@@ -206,7 +191,7 @@ class AddSubject extends StatelessWidget {
 				courseCode: courseCodeController.text,
 				semester: semesterController.text,
 				subjectName: courseNameController.text,
-				batch: batchDropDownController!
+				batch: batchDropDownController.text
 			);
 			try {
 				final isExisting = await FirebaseFirestore.instance.collection('subjects').doc(subjectId).get();
@@ -220,7 +205,7 @@ class AddSubject extends StatelessWidget {
 					);
 				}
 				else {
-					addSUbjectToStudents(subjectModel.subjectId, subjectModel.batch);
+					addSubjectToStudents(subjectModel.subjectId, subjectModel.batch);
 					await FirebaseFirestore.instance.collection('subjects').doc(subjectModel.subjectId).set(subjectModel.toMap());
 					showSnackBar(
 						context: context, 
@@ -248,7 +233,7 @@ class AddSubject extends StatelessWidget {
 		addSubjectButtonNotifier.value = false;
 	}
 
-	Future<void> addSUbjectToStudents(String subjectId, String batch) async {
+	Future<void> addSubjectToStudents(String subjectId, String batch) async {
 		final students = await FirebaseFirestore.instance.collection('students').where('batch', isEqualTo: batch).get();
 		for (var student in students.docs) {
 			final List subjectsList = student.data()['subjects'];

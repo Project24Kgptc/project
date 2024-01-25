@@ -4,27 +4,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_analytics/admin/admin_dash.dart';
+import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/admin/admin_dash.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
 import 'package:student_analytics/provider/subject_provider.dart';
-import 'package:student_analytics/student/std_dash.dart';
-import 'package:student_analytics/teacher/teacher_dash.dart';
-import 'package:student_analytics/widgets/snack_bar.dart';
+import 'package:student_analytics/modules/student/std_dash.dart';
+import 'package:student_analytics/modules/teacher/teacher_dash.dart';
 import 'package:student_analytics/widgets/text_field.dart';
-
-ValueNotifier selectedLoginNotifier = ValueNotifier(true);
-ValueNotifier loginButtonLoadingNotifier = ValueNotifier(false);
-ValueNotifier passwordVisibleNotifier = ValueNotifier(false);
-
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController= TextEditingController();
 
 class LoginPage extends StatelessWidget {
 	LoginPage({super.key});
 
 	final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
+
+	final ValueNotifier<bool> _selectedLoginNotifier = ValueNotifier(true);
+	final ValueNotifier<bool> _loginButtonLoadingNotifier = ValueNotifier(false);
+	final ValueNotifier<bool> _passwordVisibleNotifier = ValueNotifier(false);
+	final ValueNotifier<String> _loginErrorMessageNotifier = ValueNotifier('');
+
+	final TextEditingController _emailController = TextEditingController();
+	final TextEditingController _passwordController= TextEditingController();
 
 	@override
 	Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class LoginPage extends StatelessWidget {
 								mainAxisSize: MainAxisSize.min,
 								children: [
 									InkWell(
-										onTap: () => selectedLoginNotifier.value = !selectedLoginNotifier.value,
+										onTap: () => _selectedLoginNotifier.value = !_selectedLoginNotifier.value,
 										child: Container(
 											margin: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
 											decoration: BoxDecoration(
@@ -81,7 +82,7 @@ class LoginPage extends StatelessWidget {
 														],
 													),
 													ValueListenableBuilder(
-														valueListenable: selectedLoginNotifier,
+														valueListenable: _selectedLoginNotifier,
 														builder: (context, value, child) {
 															return AnimatedPositioned(
 																left: value ? 0 : (MediaQuery.of(context).size.width/2) - 95,
@@ -126,15 +127,31 @@ class LoginPage extends StatelessWidget {
 															fontWeight: FontWeight.w700,
 														),
 													),
-													const SizedBox(height: 15,),
+													const SizedBox(height: 6),
 													ValueListenableBuilder(
-														valueListenable: selectedLoginNotifier,
+														valueListenable: _loginErrorMessageNotifier,
+														builder: (context, value, child) {
+															return Visibility(
+																visible: value != '',
+																child: Text(
+																	value,
+																	style: const TextStyle(
+																		color: Colors.red
+																	),
+																),
+															);
+														},
+													),
+													const SizedBox(height: 15),
+													ValueListenableBuilder(
+														valueListenable: _selectedLoginNotifier,
 														builder: (context, value, child) {
 															return CustomTextField(
-																controller: emailController,
+																controller: _emailController,
 																keyboardType: value ? TextInputType.number : TextInputType.emailAddress,
 																labelText: value ? 'Register Number' : 'Email',
 																prefixIcon: Icons.email,
+																onChange: (_) => _loginErrorMessageNotifier.value = '',
 																validator: (input) {
 																	if(value) {
 																		final RegExp regNoRegEx = RegExp(r'^[0-9]+$');
@@ -161,17 +178,18 @@ class LoginPage extends StatelessWidget {
 													),
 													const SizedBox(height: 10,),
 													ValueListenableBuilder(
-														valueListenable: passwordVisibleNotifier,
+														valueListenable: _passwordVisibleNotifier,
 														builder: (context, value, child) {
 															return CustomTextField(
-																controller: passwordController,
+																controller: _passwordController,
 																obscureText: !value,
 																labelText: "Password",
 																prefixIcon: Icons.lock,
 																suffixIcon: IconButton(
-																	onPressed: () => passwordVisibleNotifier.value = !passwordVisibleNotifier.value,
+																	onPressed: () => _passwordVisibleNotifier.value = !_passwordVisibleNotifier.value,
 																	icon: Icon(value ? Icons.visibility : Icons.visibility_off, color: Colors.black, size: 20,),
 																),
+																onChange: (_) => _loginErrorMessageNotifier.value = '',
 																validator: (value) {
 																	if(value!.trim() == '') {
 																		return 'Please enter your password';
@@ -199,7 +217,7 @@ class LoginPage extends StatelessWidget {
 															),
 															onPressed: () {
 																if(_loginFormKey.currentState!.validate()) {
-																	if(selectedLoginNotifier.value) {
+																	if(_selectedLoginNotifier.value) {
 																		studentLoginFunctionality(context);
 																	}
 																	else {
@@ -208,7 +226,7 @@ class LoginPage extends StatelessWidget {
 																}
 															},
 															child: ValueListenableBuilder(
-																valueListenable: loginButtonLoadingNotifier,
+																valueListenable: _loginButtonLoadingNotifier,
 																builder: (context, value, child) {
 																	if(value) {
 																		return const SizedBox(
@@ -248,13 +266,13 @@ class LoginPage extends StatelessWidget {
 	}
 
 	Future<void> studentLoginFunctionality(BuildContext context) async {
-		if(passwordController.text.trim().length > 5) {
-			loginButtonLoadingNotifier.value = true;
+		if(_passwordController.text.trim().length > 5) {
+			_loginButtonLoadingNotifier.value = true;
 			FirebaseAuth auth = FirebaseAuth.instance;
 			try {
 				final UserCredential userCredential = await auth.signInWithEmailAndPassword(
-					email: '${emailController.text.trim()}@mail.com',
-					password: passwordController.text.trim()
+					email: '${_emailController.text.trim()}@mail.com',
+					password: _passwordController.text.trim()
 				);
 
 				final studentData = await FirebaseFirestore.instance.collection('students').doc(userCredential.user!.email!.replaceAll('@mail.com', '')).get();
@@ -263,45 +281,31 @@ class LoginPage extends StatelessWidget {
 			}
 			on FirebaseAuthException catch(e) {
 				if(e.code == 'invalid-credential') {
-					showSnackBar(
-						context: context, 
-						message: '  Incorrect Register Number or Password !', 
-						icon: const Icon(Icons.error, color: Colors.red,), 
-						duration: 5
-					);
+					_loginErrorMessageNotifier.value = '  Incorrect Register Number or Password !';
 				}
 			}
 			catch(err) {
-				showSnackBar(
-					context: context, 
-					message: '  Error occured !', 
-					icon: const Icon(Icons.error_sharp, color: Colors.red,), 
-					duration: 3
-				);
+				sss(err);
+				_loginErrorMessageNotifier.value = '  Something went wrong !';
 			}
 			finally {
-				loginButtonLoadingNotifier.value = false;
+				_loginButtonLoadingNotifier.value = false;
 			}
 		}
 		else {
 			await Future.delayed(const Duration(seconds: 1));
-			showSnackBar(
-				context: context, 
-				message: '  Incorrect Register Number or Password !', 
-				icon: const Icon(Icons.error, color: Colors.red,), 
-				duration: 2
-			);
+			_loginErrorMessageNotifier.value = '  Incorrect Register Number or Password !';
 		}
 	}
 
 	Future<void> teacherLoginFunctionality(BuildContext context) async {
-		if(passwordController.text.trim().length > 5) {
-			loginButtonLoadingNotifier.value = true;
+		if(_passwordController.text.trim().length > 5) {
+			_loginButtonLoadingNotifier.value = true;
 			FirebaseAuth auth = FirebaseAuth.instance;
 			try {
 				final UserCredential userCredential = await auth.signInWithEmailAndPassword(
-					email: emailController.text.trim(),
-					password: passwordController.text.trim()
+					email: _emailController.text.trim(),
+					password: _passwordController.text.trim()
 				);
 
 				final teacherData = await FirebaseFirestore.instance.collection('teachers').doc(userCredential.user!.email!.replaceAll('@mail.com', '')).get();
@@ -324,35 +328,20 @@ class LoginPage extends StatelessWidget {
 			}
 			on FirebaseAuthException catch(e) {
 				if(e.code == 'invalid-credential') {
-					showSnackBar(
-						context: context, 
-						message: '  Incorrect Register Number or Password !', 
-						icon: const Icon(Icons.error, color: Colors.red,), 
-						duration: 5
-					);
+					_loginErrorMessageNotifier.value = '  Incorrect Email or Password !';
 				}
 			}
 			catch(err) {
-				print(err);
-				showSnackBar(
-					context: context, 
-					message: '  Error occured !', 
-					icon: const Icon(Icons.error_sharp, color: Colors.red,), 
-					duration: 3
-				);
+				sss(err);
+				_loginErrorMessageNotifier.value = '  Something went wrong !';
 			}
 			finally {
-				loginButtonLoadingNotifier.value = false;
+				_loginButtonLoadingNotifier.value = false;
 			}
 		}
 		else {
 			await Future.delayed(const Duration(seconds: 1));
-			showSnackBar(
-				context: context, 
-				message: '  Incorrect Email or Password !', 
-				icon: const Icon(Icons.error, color: Colors.red,), 
-				duration: 2
-			);
+			_loginErrorMessageNotifier.value = '  Incorrect Email or Password !';
 		}
 	}
 }

@@ -6,8 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
+import 'package:student_analytics/main.dart';
 import 'package:student_analytics/provider/subject_provider.dart';
-import 'package:student_analytics/teacher/add_subject.dart';
+import 'package:student_analytics/modules/teacher/add_subject/add_subject.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class TeacherDashboard extends StatelessWidget {
@@ -18,7 +19,7 @@ class TeacherDashboard extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
-			floatingActionButton: FloatingActionButton(
+			floatingActionButton: ElevatedButton(
 				onPressed: () async {
 					final students = await FirebaseFirestore.instance.collection('students').get();
 					await Future.delayed(const Duration(microseconds: 100));
@@ -33,7 +34,7 @@ class TeacherDashboard extends StatelessWidget {
 					batchList.sort();
 					Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddSubject(teacherId: teacherData.teacherId, teacherName: teacherData.name, batchesList: batchList,)));
 				},
-				child: const Icon(Icons.add),
+				child: const Text('Add Subject'),
 			),
 			appBar: AppBar(
 				title: const Text('Teacher Dashboard'),
@@ -45,7 +46,7 @@ class TeacherDashboard extends StatelessWidget {
 								Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => LoginPage()));
 							}
 							catch(err) {
-								print(err);
+								sss(err);
 								showSnackBar(
 									context: context, 
 									message: '  Error occured !', 

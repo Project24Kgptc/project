@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_analytics/admin/students.dart';
-import 'package:student_analytics/admin/teachers.dart';
+import 'package:student_analytics/modules/admin/students/students.dart';
+import 'package:student_analytics/modules/admin/teachers/teachers.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
@@ -78,6 +78,7 @@ class AdminDashboard extends StatelessWidget {
 				batchList.add(student.batch);
 			}
 		}
+		batchList.sort();
 
 		Provider.of<StudentsProvider>(context, listen: false).setAllStudentsData(studentObjectsList);
 		dropdownNotifier.value = '--- All ---';

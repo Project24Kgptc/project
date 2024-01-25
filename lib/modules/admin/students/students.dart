@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_analytics/admin/add_student.dart';
+import 'package:student_analytics/modules/admin/students/add_student/add_student.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/provider/batch_provider.dart';
 import 'package:student_analytics/provider/students_provider.dart';

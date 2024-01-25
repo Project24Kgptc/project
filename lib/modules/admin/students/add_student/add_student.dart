@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/admin/students/add_student/student_validator.dart';
 import 'package:student_analytics/provider/students_provider.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
-import '../widgets/alert_dialog.dart';
-import '../widgets/text_field.dart';
+import '../../../../widgets/alert_dialog.dart';
+import '../../../../widgets/text_field.dart';
 
 ValueNotifier<bool> addStudentButtonLoadingNotifier = ValueNotifier(false);
 
@@ -24,6 +25,7 @@ class AddStudent extends StatelessWidget {
 	AddStudent({super.key});
 
 	final GlobalKey<FormState> _addStudentFormkey = GlobalKey<FormState>();
+	final StudentValidator _validator = StudentValidator();
 
 	@override
 	Widget build(BuildContext context) {
@@ -60,12 +62,7 @@ class AddStudent extends StatelessWidget {
 										labelText: 'Name', 
 										prefixIcon: Icons.person, 
 										controller: nameController, 
-										validator: (input) {
-											if(input!.trim() == '') {
-												return 'Name is required';
-											}
-											return null;
-										},
+										validator: _validator.name,
 									),
 									const SizedBox(height: 10,),
 									CustomTextField(
@@ -73,16 +70,7 @@ class AddStudent extends StatelessWidget {
 										prefixIcon: Icons.numbers, 
 										controller: regNoController, 
 										keyboardType: TextInputType.number,
-										validator: (input) {
-											final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
-											if(input!.trim() == '') {
-												return 'Register number is required';
-											}
-											else if(input.trim().length != 4 || !numberCheckRegex.hasMatch(input)) {
-												return 'Invalid Register number';
-											}
-											return null;
-										},
+										validator: _validator.registerNumber,
 									),
 									const SizedBox(height: 10,),
 									CustomTextField(
@@ -90,16 +78,7 @@ class AddStudent extends StatelessWidget {
 										prefixIcon: Icons.numbers, 
 										controller: rollNoController, 
 										keyboardType: TextInputType.number,
-										validator: (input) {
-											final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
-											if(input!.trim() == '') {
-												return 'Roll number is required';
-											}
-											else if(!numberCheckRegex.hasMatch(input)) {
-												return 'Invalid roll number';
-											}
-											return null;
-										},
+										validator: _validator.rollNumber,
 									),
 									const SizedBox(height: 10,),
 									CustomTextField(
@@ -107,16 +86,7 @@ class AddStudent extends StatelessWidget {
 										prefixIcon: Icons.email, 
 										controller: emailController, 
 										keyboardType: TextInputType.emailAddress,
-										validator: (input) {
-											final RegExp emailRegExp = RegExp( r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-											if(input!.trim() == '') {
-												return "Email is required";
-											}
-											else if(!emailRegExp.hasMatch(input.trim())) {
-												return 'Invalid email address';
-											}
-											return null;
-										},
+										validator: _validator.email,
 									),
 									const SizedBox(height: 10,),
 									CustomTextField(
@@ -124,12 +94,7 @@ class AddStudent extends StatelessWidget {
 										prefixIcon: Icons.phone, 
 										controller: phoneNumberController, 
 										keyboardType: TextInputType.number,
-										validator: (input) {
-											if(input!.trim() == '') {
-												return 'Phone number is required';
-											}
-											return null;
-										},
+										validator: _validator.phoneNumber,
 									),
 									const SizedBox(height: 10,),
 									CustomTextField(
@@ -138,28 +103,7 @@ class AddStudent extends StatelessWidget {
 										prefixIcon: Icons.people, 
 										controller: batchController, 
 										keyboardType: TextInputType.number,
-										validator: (input) {
-											if(input!.trim() == '') {
-												return 'Batch is required';
-											}
-											else if(input.trim().length != 7) {
-												return 'Invalid batch';
-											}
-											else {
-												RegExp batchRegex = RegExp(r'^\d{4}-(\d{2})$');
-												if(!batchRegex.hasMatch(input.trim())) {
-													return 'Input on format 2021-24';
-												}
-												else {
-													int startYear = int.tryParse(input.substring(0, 4)) ?? 0;
-  													int endYear = int.tryParse(input.substring(5, 7)) ?? 0;
-													if(startYear - endYear != 1997) {
-														return 'Batch years mismatch';
-													}
-												}
-											}
-											return null;
-										},
+										validator: _validator.batch,
 									),
 									const SizedBox(height: 20,),
 									Container(

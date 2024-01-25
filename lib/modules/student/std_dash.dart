@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
-import 'package:student_analytics/student/subject_dash.dart';
+import 'package:student_analytics/modules/student/subject_dash.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class StudentDashboard extends StatelessWidget {

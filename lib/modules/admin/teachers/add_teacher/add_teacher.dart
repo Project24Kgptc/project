@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/admin/teachers/add_teacher/teacher_validator.dart';
 import 'package:student_analytics/provider/teachers_provider.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
-import '../widgets/text_field.dart';
+import '../../../../widgets/text_field.dart';
 
 ValueNotifier<bool> addTeacherButtonLoadingNotifier = ValueNotifier(false);
 
@@ -21,6 +22,7 @@ class AddTeacher extends StatelessWidget {
 	AddTeacher({super.key});
 
 	final GlobalKey<FormState> _addTeacherFormkey = GlobalKey<FormState>();
+	final TeacherValidator _validator = TeacherValidator();
 
 	@override
 	Widget build(BuildContext context) {
@@ -58,28 +60,14 @@ class AddTeacher extends StatelessWidget {
 											prefixIcon: Icons.perm_identity, 
 											keyboardType: TextInputType.number,
 											controller: teacherIdController, 
-											validator: (input) {
-												final RegExp numberCheckRegex = RegExp(r'^[0-9]+$');
-												if(input!.trim() == '') {
-													return 'Id is required';
-												}
-												else if(!numberCheckRegex.hasMatch(input)) {
-													return 'Invalid Id';
-												}
-												return null;
-											},
+											validator: _validator.id,
 										),
 										const SizedBox(height: 10,),
 										CustomTextField(
 											labelText: 'Name', 
 											prefixIcon: Icons.person, 
 											controller: nameController, 
-											validator: (input) {
-												if(input!.trim() == '') {
-													return 'Name is required';
-												}
-												return null;
-											},
+											validator: _validator.name,
 										),
 										const SizedBox(height: 10,),
 										CustomTextField(
@@ -87,16 +75,7 @@ class AddTeacher extends StatelessWidget {
 											prefixIcon: Icons.email, 
 											controller: emailController, 
 											keyboardType: TextInputType.emailAddress,
-											validator: (input) {
-												final RegExp emailRegExp = RegExp( r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-												if(input!.trim() == '') {
-													return "Email is required";
-												}
-												else if(!emailRegExp.hasMatch(input.trim())) {
-													return 'Invalid email address';
-												}
-												return null;
-											},
+											validator: _validator.email,
 										),
 										const SizedBox(height: 10,),
 										CustomTextField(
@@ -104,12 +83,7 @@ class AddTeacher extends StatelessWidget {
 											prefixIcon: Icons.phone, 
 											controller: phoneNumberController, 
 											keyboardType: TextInputType.number,
-											validator: (input) {
-												if(input!.trim() == '') {
-													return 'Phone number is required';
-												}
-												return null;
-											},
+											validator: _validator.phoneNumber,
 										),
 										const SizedBox(height: 20,),
 										Container(

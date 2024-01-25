@@ -4,14 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_analytics/admin/admin_dash.dart';
+import 'package:student_analytics/modules/admin/admin_dash.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
 import 'package:student_analytics/provider/subject_provider.dart';
-import 'package:student_analytics/student/std_dash.dart';
-import 'package:student_analytics/teacher/teacher_dash.dart';
+import 'package:student_analytics/modules/student/std_dash.dart';
+import 'package:student_analytics/modules/teacher/teacher_dash.dart';
 
 class AuthScreen extends StatelessWidget {
 	AuthScreen({super.key});
