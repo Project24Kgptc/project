@@ -2,7 +2,7 @@
 
 import 'package:student_analytics/data_models/assignment_model.dart';
 import 'package:student_analytics/main.dart';
-import 'package:student_analytics/validators/asignment_validator.dart';
+import 'package:student_analytics/modules/teacher/subject/add_assignment/asignment_validator.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 import 'package:student_analytics/widgets/text_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
