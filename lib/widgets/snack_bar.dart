@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 void showSnackBar({
+	int duration = 2,
 	required BuildContext context, 
 	required String message, 
 	required Widget icon, 
-	required int duration
 }) {
 	ScaffoldMessenger.of(context).showSnackBar(SnackBar(
 		behavior: SnackBarBehavior.floating,

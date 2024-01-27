@@ -62,6 +62,7 @@ class TeacherDashboard extends StatelessWidget {
 			),
 			body: SafeArea(
 				child: Column(
+					crossAxisAlignment: CrossAxisAlignment.start,
 					children: [
 						Container(
 							padding: const EdgeInsets.all(5),
@@ -73,6 +74,13 @@ class TeacherDashboard extends StatelessWidget {
 							child: ListTile(
 								title: Text(teacherData.name),
 								subtitle: Text(teacherData.email),
+							),
+						),
+						const Text(
+							' Subjects',
+							style: TextStyle(
+								fontSize: 20,
+								
 							),
 						),
 						Expanded(
@@ -101,15 +109,14 @@ class TeacherDashboard extends StatelessWidget {
 															borderRadius: BorderRadius.circular(10)
 														),
 														contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-														leading: const CircleAvatar(
-															child: Icon(Icons.person),
-														),
+														leading: const Icon(Icons.subject),
 														title: Text(
 															model.subjects[index].subjectName,
 															style: const TextStyle(
 																fontWeight: FontWeight.w500,
 															),
 														),
+														subtitle: Text(model.subjects[index].batch),
 														trailing: Text(model.subjects[index].courseCode),
 														onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => SubjectDashboard(subjectModel: model.subjects[index]))),
 													),
