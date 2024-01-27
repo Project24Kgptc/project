@@ -7,6 +7,7 @@ import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/teacher_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/teacher/subject/subject_dash.dart';
 import 'package:student_analytics/provider/subject_provider.dart';
 import 'package:student_analytics/modules/teacher/add_subject/add_subject.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
@@ -110,7 +111,7 @@ class TeacherDashboard extends StatelessWidget {
 															),
 														),
 														trailing: Text(model.subjects[index].courseCode),
-														// onTap: () => showMyBottomSheet(context, model.subjects[index]),
+														onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => SubjectDashboard(subjectModel: model.subjects[index]))),
 													),
 												);
 											},
