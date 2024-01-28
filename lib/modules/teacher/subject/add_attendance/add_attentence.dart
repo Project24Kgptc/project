@@ -1,6 +1,5 @@
 import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
-import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/provider/attendance_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

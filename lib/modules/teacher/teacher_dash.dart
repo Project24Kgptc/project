@@ -118,7 +118,7 @@ class TeacherDashboard extends StatelessWidget {
 														),
 														subtitle: Text(model.subjects[index].batch),
 														trailing: Text(model.subjects[index].courseCode),
-														onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => SubjectDashboard(subjectModel: model.subjects[index]))),
+														onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => TeacherSubjectDashboard(subjectModel: model.subjects[index]))),
 													),
 												);
 											},

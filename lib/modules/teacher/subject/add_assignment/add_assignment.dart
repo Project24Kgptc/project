@@ -184,6 +184,7 @@ class AddAssignmentScreen extends StatelessWidget {
 			final String date = dateTime.toString().substring(0, 10);
 			_dueDateController.text = date;
 		}
+		_duedateFocusNode.unfocus();
 	}
 
 	void unFocusAllFields() {
