@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/data_models/assignment_model.dart';
 import 'package:student_analytics/data_models/seriestest_mark_model.dart';
+import 'package:student_analytics/data_models/seriestest_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
@@ -31,9 +32,13 @@ class TeacherSubjectDashboard extends StatelessWidget {
 							future: getAssignments(context),
 							builder: (context, snapshot) {
 								if(snapshot.connectionState == ConnectionState.waiting) {
-									return const ExpansionTile(
-										title: Text('Assignments'),
-										children: [
+									return ExpansionTile(
+										title: const Text('Assignments'),
+										trailing: IconButton(
+											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											icon: const Icon(Icons.add),
+										),
+										children: const [
 											ListTile(
 												title: Center(child: CircularProgressIndicator()),
 											)
@@ -41,9 +46,13 @@ class TeacherSubjectDashboard extends StatelessWidget {
 									);
 								}
 								else if(!snapshot.hasData){
-									return const ExpansionTile(
-										title: Text('Assignments'),
-										children: [
+									return ExpansionTile(
+										title: const Text('Assignments'),
+										trailing: IconButton(
+											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											icon: const Icon(Icons.add),
+										),
+										children: const [
 											ListTile(
 												title: Text('No data'),
 											)
@@ -71,35 +80,55 @@ class TeacherSubjectDashboard extends StatelessWidget {
 							},
 						),
 						const SizedBox(height: 5,),
-						ExpansionTile(
-							collapsedBackgroundColor: Colors.deepOrangeAccent,
-							title: const Text('Series Tests'),
-							trailing: IconButton(
-								onPressed: () async {
-									final List<SeriesTestMarkModel>? seriesTestMarksModel = await generateSeriestestModel();
-									if(seriesTestMarksModel != null && seriesTestMarksModel.isNotEmpty) {
-										Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddSeriesTest(
-											subjectModel: subjectModel, 
-											seriesTestMarkModel: seriesTestMarksModel,
-										)));
-									}
-									else {
-										customAlertDialog(
-											context: context,
-											messageText: 'No students data found for the subject !',
-											onPrimaryButtonClick: () => Navigator.of(context).pop(),
-											isSecondButtonVisible: false,
-											primaryButtonText: 'Back'
-										);
-									}
-								},
-								icon: const Icon(Icons.add),
-							),
-							children: const [
-								Text('SeriesTest'),
-								Text('SeriesTest'),
-								Text('SeriesTest'),
-							],
+						FutureBuilder(
+							future: getSeriesTests(context),
+							builder: (context, snapshot) {
+								if(snapshot.connectionState == ConnectionState.waiting) {
+									return ExpansionTile(
+										title: const Text('Series Tests'),
+										trailing: IconButton(
+											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											icon: const Icon(Icons.add),
+										),
+										children: const [
+											ListTile(
+												title: Center(child: CircularProgressIndicator()),
+											)
+										],
+									);
+								}
+								else if(!snapshot.hasData){
+									return ExpansionTile(
+										title: const Text('Series Tests'),
+										trailing: IconButton(
+											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											icon: const Icon(Icons.add),
+										),
+										children: const [
+											ListTile(
+												title: Text('No data'),
+											)
+										],
+									);
+								}
+								else {
+									return ExpansionTile(
+										title: const Text('Series Tests'),
+										trailing: IconButton(
+											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											icon: const Icon(Icons.add),
+										),
+										children: snapshot.data!.map((model) {
+											return ListTile(
+												title: Text(model.title),
+												subtitle: Text(
+													model.subjectName
+												),
+											);
+										}).toList(),
+									);
+								}
+							},
 						),
 						const SizedBox(height: 5,),
 						ExpansionTile(
@@ -129,6 +158,31 @@ class TeacherSubjectDashboard extends StatelessWidget {
 					AssignmentModel.fromJson(e.data())
 				)).toList();
 				return assignmentsList;
+			}
+			else {
+				return null;
+			}
+		}
+		catch(err) {
+			sss(err);
+			showSnackBar(
+				context: context,
+				message: '  Error occured !',
+				icon: const Icon(Icons.error, color: Colors.red,)
+			);
+			return null;
+		}
+	}
+
+	Future<List<SeriesTestModel>?> getSeriesTests(BuildContext context) async  {
+		try {
+			final data = await FirebaseFirestore.instance.collection('seriesTests').where('subjectId', isEqualTo: subjectModel.subjectId).get();
+			if(data.docs.isNotEmpty) {
+				final List<SeriesTestModel> seriesTestsList = data.docs.map((seriesTest)  {
+					return SeriesTestModel.fromMaptoObject(seriesTest.data());
+				}
+				).toList();
+				return seriesTestsList;
 			}
 			else {
 				return null;

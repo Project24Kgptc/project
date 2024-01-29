@@ -1,3 +1,5 @@
+import 'package:student_analytics/data_models/seriestest_mark_model.dart';
+
 class SeriesTestModel {
 	final String subjectId;
 	final String title;
@@ -11,21 +13,22 @@ class SeriesTestModel {
 		required this.marks
 	});
 
-	// factory SeriesTestModel.fromMaptoObject(List<StudentModel> studentModels, SubjectModel subjectModel, String title) {
-	// 	return SeriesTestModel(
-	// 		title: title,
-	// 		subjectId: subjectModel.subjectId,
-	// 		subjectName: subjectModel.subjectName,
-	// 		marks: studentModels.map((model) {
-	// 			return {
-	// 				'rollNo': model.rollNo,
-	// 				'regNo': model.regNo,
-	// 				'studentName': model.name,
-	// 				'mark': ''
-	// 			};
-	// 		}).toList()
-	// 	);
-	// }
+	factory SeriesTestModel.fromMaptoObject(Map<String, dynamic> map) {
+		final List<Map<String, dynamic>> castedMarks = (map['marks'] as List<dynamic>).map((markData) => Map<String, dynamic>.from(markData)).toList();
+		return SeriesTestModel(
+			title: map['title'],
+			subjectId: map['subjectId'],
+			subjectName: map['subjectName'],
+			marks: castedMarks.map((markData) {
+				return {
+					'rollNo': markData['rollNo'],
+					'regNo': markData['regNo'],
+					'studentName': markData['studentName'],
+					'mark': markData['mark']
+				};
+			}).toList()
+		);
+	}
 
 	Map<String, dynamic> toMap() {
 		return {
