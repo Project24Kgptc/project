@@ -1,9 +1,0 @@
-assignment model new field - dateCreated => creation date of assignment
-value  = (String) yyyy-mm-dd hh:mm:ss 
-generated => slice with length 19 from DateTime.now().toString()
-
-custom textfield new optional field => onTap
-to invoke date picker in add assignment screen
-
-custom text field new optional field => focusNode
-to unfocus on click outside textfield
