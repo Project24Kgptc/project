@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_analytics/data_models/admin_model.dart';
 import 'package:student_analytics/modules/admin/admin_dash.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
@@ -60,7 +61,8 @@ class AuthScreen extends StatelessWidget {
 			}
 			final adminData = await FirebaseFirestore.instance.collection('admins').doc(user.email!.replaceAll('@mail.com', '')).get();
 			if(adminData.exists) {
-				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminName: adminData.data()!['name'])));
+				final AdminModel adminModel = AdminModel.fromMaptoObject(adminData.data()!);
+					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminModel: adminModel)));
 				return;
 			}
 			Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => LoginPage()));

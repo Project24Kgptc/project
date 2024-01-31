@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_analytics/data_models/admin_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/modules/admin/admin_dash.dart';
 import 'package:student_analytics/data_models/student_model.dart';
@@ -323,7 +324,8 @@ class LoginPage extends StatelessWidget {
 				final adminData = await FirebaseFirestore.instance.collection('admins').doc(userCredential.user!.email!.replaceAll('@mail.com', '')).get();
 				if(adminData.exists) {
 					_loginFormKey.currentState!.reset();
-					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminName: adminData.data()!['name'])));
+					final AdminModel adminModel = AdminModel.fromMaptoObject(adminData.data()!);
+					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminModel: adminModel)));
 				}
 			}
 			on FirebaseAuthException catch(e) {
