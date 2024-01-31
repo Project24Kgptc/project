@@ -87,7 +87,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
 									return ExpansionTile(
 										title: const Text('Series Tests'),
 										trailing: IconButton(
-											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											onPressed: () => gotoAddSeriesTestScreen(context),
 											icon: const Icon(Icons.add),
 										),
 										children: const [
@@ -101,7 +101,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
 									return ExpansionTile(
 										title: const Text('Series Tests'),
 										trailing: IconButton(
-											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											onPressed: () => gotoAddSeriesTestScreen(context),
 											icon: const Icon(Icons.add),
 										),
 										children: const [
@@ -115,7 +115,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
 									return ExpansionTile(
 										title: const Text('Series Tests'),
 										trailing: IconButton(
-											onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddAssignmentScreen(subjectId: subjectModel.subjectId))),
+											onPressed: () => gotoAddSeriesTestScreen(context),
 											icon: const Icon(Icons.add),
 										),
 										children: snapshot.data!.map((model) {
@@ -228,6 +228,25 @@ class TeacherSubjectDashboard extends StatelessWidget {
 		catch(err) {
 			sss(err);
 			return null;
+		}
+	}
+
+	Future<void> gotoAddSeriesTestScreen(BuildContext context) async {
+		final List<SeriesTestMarkModel>? seriesTestMarksModel = await generateSeriestestModel();
+		if(seriesTestMarksModel != null && seriesTestMarksModel.isNotEmpty) {
+			Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AddSeriesTest(
+				subjectModel: subjectModel, 
+				seriesTestMarkModel: seriesTestMarksModel,
+			)));
+		}
+		else {
+			customAlertDialog(
+				context: context,
+				messageText: 'No students data found for the subject !',
+				onPrimaryButtonClick: () => Navigator.of(context).pop(),
+				isSecondButtonVisible: false,
+				primaryButtonText: 'Back'
+			);
 		}
 	}
 }
