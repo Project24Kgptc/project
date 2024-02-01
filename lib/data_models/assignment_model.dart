@@ -3,9 +3,11 @@ class AssignmentModel {
 	final String title;
 	final String description;
 	final String dueDate;
+	final String dateCreated;
 	final List<Map<String, dynamic>> submissions;
 
 	AssignmentModel({
+		required this.dateCreated,
 		required this.subjectId, 
 		required this.title, 
 		required this.description, 
@@ -13,26 +15,27 @@ class AssignmentModel {
 		required this.submissions
 	});
 
-	factory AssignmentModel.fromJson(Map<String, dynamic> json) {
-    return AssignmentModel(
-      subjectId: json['subjectId'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      dueDate: json['dueDate'] ?? '',
-      submissions: (json['submissions'] as List<dynamic>? ?? []).map((submission) {
-        // Assuming each submission is a Map<String, dynamic>
-        return Map<String, dynamic>.from(submission);
-      }).toList(),
-    );
+	factory AssignmentModel.fromJson(Map<String, dynamic> map) {
+		return AssignmentModel(
+			subjectId: map['subjectId'],
+			title: map['title'],
+			description: map['description'],
+			dueDate: map['dueDate'],
+			dateCreated: map['dateCreated'],
+			submissions: (map['submissions'] as List<dynamic>? ?? []).map((submission) {
+				return Map<String, dynamic>.from(submission);
+			}).toList(),
+		);
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'subjectId': subjectId,
-      'title': title,
-      'description': description,
-      'dueDate': dueDate,
-      'submissions': submissions,
-	};
-  }
+	Map<String, dynamic> toJson() {
+		return {
+			'subjectId': subjectId,
+			'title': title,
+			'description': description,
+			'dueDate': dueDate,
+			'dateCreated': dateCreated,
+			'submissions': submissions,
+		};
+	}
 }

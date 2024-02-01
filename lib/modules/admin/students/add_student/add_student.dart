@@ -210,7 +210,7 @@ class AddStudent extends StatelessWidget {
 					Provider.of<StudentsProvider>(context, listen: false).addStudent(student);
 					_addStudentFormkey.currentState!.reset();
 
-					addUserAuth(student.email);
+					addUserAuth('${student.regNo}@mail.com');
 				}
 			}
 			catch(err) {

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
 	const CustomTextField({
 		super.key, 
-		this.hintText, 
-		this.suffixIcon,
-		this.obscureText = false, 
-		this.keyboardType, 
+		this.onTap,
 		this.onChange,
+		this.hintText, 
+		this.focusNode,
+		this.suffixIcon,
+		this.keyboardType, 
+		this.obscureText = false, 
 		required this.labelText, 
 		required this.prefixIcon, 
 		required this.controller, 
@@ -20,9 +22,11 @@ class CustomTextField extends StatelessWidget {
 	final TextEditingController controller;
 	final String? hintText;
 	final Widget? suffixIcon;
+	final FocusNode? focusNode;
+	final void Function()? onTap;
 	final TextInputType? keyboardType;
-	final String? Function(String?) validator;
 	final void Function(String)? onChange;
+	final String? Function(String?) validator;
 
 	@override
 	Widget build(BuildContext context) {
@@ -32,6 +36,8 @@ class CustomTextField extends StatelessWidget {
 			keyboardType: keyboardType,
 			validator: validator,
 			onChanged: onChange,
+			onTap: onTap,
+			focusNode: focusNode,
 			decoration: InputDecoration(
 				contentPadding: const EdgeInsets.all(0),
 				prefixIcon: Icon(prefixIcon),
