@@ -150,7 +150,7 @@ class StudentDashboard extends StatelessWidget {
                       child: ListTile(
                         onTap: () =>
                             Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SubjectDashboard(),
+                          builder: (context) => SubjectDashboard(subject: subjects[index],),
                         )),
                         title: Text(
                           subjects[index].subjectName,
