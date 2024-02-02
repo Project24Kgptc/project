@@ -45,7 +45,8 @@ class AuthScreen extends StatelessWidget {
 			final studentData = await FirebaseFirestore.instance.collection('students').doc(user.email!.replaceAll('@mail.com', '')).get();
 			if(studentData.exists) {
 				final StudentModel studentModel = StudentModel.fromMaptoObject(studentData.data()!);
-				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(studentData: studentModel)));
+        List<SubjectModel>?subjects=await  getSubjectsByStudentId(studentModel.regNo);
+				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(studentData: studentModel,subjects: subjects!,)));
 				return;
 			}
 			final teacherData = await FirebaseFirestore.instance.collection('teachers').doc(user.email!.replaceAll('@mail.com', '')).get();
@@ -68,4 +69,48 @@ class AuthScreen extends StatelessWidget {
 			Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => LoginPage()));
 		}
 	}
+
+  //get subject list of  students
+  Future<List<SubjectModel>?> getSubjectsByStudentId(String studentId) async {
+    try {
+      // Step 1: Fetch student document
+      final studentData = await FirebaseFirestore.instance
+          .collection('students')
+          .doc(studentId)
+          .get();
+
+      if (studentData.exists) {
+        // Step 2: Retrieve subject IDs from the student document
+        final List<String> subjectIds =
+            List<String>.from(studentData['subjects']);
+
+        if (subjectIds.isNotEmpty) {
+          // Step 3: Fetch corresponding subject documents
+          final data = await FirebaseFirestore.instance
+              .collection('subjects')
+              .where('subjectId', whereIn: subjectIds)
+              .get();
+
+          if (data.docs.isNotEmpty) {
+            final List<SubjectModel> subjectList = data.docs
+                .map((e) => SubjectModel.fromMaptoObject(e.data()))
+                .toList();
+            return subjectList;
+          } else {
+            return null;
+          }
+        } else {
+          // No subject IDs in the student document
+          return null;
+        }
+      } else {
+        // Student document not found
+        return null;
+      }
+    } catch (e) {
+      // Handle any exceptions
+      print('Error: $e');
+      return null;
+    }
+  }
 }
