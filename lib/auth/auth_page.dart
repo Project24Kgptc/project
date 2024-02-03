@@ -62,7 +62,7 @@ class AuthScreen extends StatelessWidget {
 			final adminData = await FirebaseFirestore.instance.collection('admins').doc(user.email!.replaceAll('@mail.com', '')).get();
 			if(adminData.exists) {
 				final AdminModel adminModel = AdminModel.fromMaptoObject(adminData.data()!);
-					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminModel: adminModel)));
+				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminModel: adminModel)));
 				return;
 			}
 			Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => LoginPage()));
