@@ -1,4 +1,3 @@
-import 'package:student_analytics/data_models/seriestest_mark_model.dart';
 
 class SeriesTestModel {
 	final String subjectId;
