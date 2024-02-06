@@ -1,34 +1,33 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:student_analytics/data_models/assignment_model.dart';
 import 'package:student_analytics/data_models/seriestest_mark_model.dart';
-import 'package:student_analytics/data_models/seriestest_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/widgets/alert_dialog.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 import 'package:student_analytics/widgets/text_field.dart';
 
-class AddSeriesTest extends StatelessWidget {
-  AddSeriesTest(
+class AddAssignmentMark extends StatelessWidget {
+  AddAssignmentMark(
       {super.key,
       required this.subjectModel,
-      required this.seriesTestMarkModel});
+      required this.seriesTestMarkModel,
+      required this.assignmentdata});
 
   final SubjectModel subjectModel;
   final List<AddMarkModel> seriesTestMarkModel;
+  final AssignmentModel assignmentdata;
 
-  final GlobalKey<FormState> _addSeriestestFormKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
+  final GlobalKey<FormState> _addAssignmentMarkFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
-        title: const Text('Add Series Test'),
+        title: const Text('Add Assignment Mark'),
         actions: [
           Padding(
             padding: const EdgeInsets.all(10),
@@ -47,30 +46,23 @@ class AddSeriesTest extends StatelessWidget {
       ),
       body: SafeArea(
         child: Form(
-          key: _addSeriestestFormKey,
+          key: _addAssignmentMarkFormKey,
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.all(5),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.deepPurpleAccent,
-                          spreadRadius: 1,
-                          blurRadius: 5)
-                    ]),
-                child: CustomTextField(
-                  controller: _titleController,
-                  labelText: 'Title',
-                  prefixIcon: Icons.title_outlined,
-                  validator: (input) =>
-                      input == '' ? 'Please enter title' : null,
-                ),
-              ),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(5),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white,
+                      boxShadow: const [
+                        BoxShadow(
+                            color: Colors.deepPurpleAccent,
+                            spreadRadius: 1,
+                            blurRadius: 5)
+                      ]),
+                  child: Text(assignmentdata.title)),
               Expanded(
                 child: Container(
                     margin: const EdgeInsets.all(5),
@@ -183,7 +175,7 @@ class AddSeriesTest extends StatelessWidget {
   }
 
   void saveSeriesTestData(BuildContext context) {
-    if (_addSeriestestFormKey.currentState!.validate()) {
+    if (_addAssignmentMarkFormKey.currentState!.validate()) {
       if (isAnyMarkFieldEmpty(seriesTestMarkModel)) {
         customAlertDialog(
             context: context,
@@ -206,21 +198,15 @@ class AddSeriesTest extends StatelessWidget {
       return model.toMap();
     }).toList();
 
-    final SeriesTestModel seriesTestModel = SeriesTestModel(
-        subjectId: subjectModel.subjectId,
-        title: _titleController.text,
-        subjectName: subjectModel.subjectName,
-        marks: seriesTestMarksMaps);
-
     try {
-      final String docId = DateTime.now().toString().substring(0, 19);
+      final String docId = assignmentdata.dateCreated;
       await FirebaseFirestore.instance
-          .collection('seriesTests')
+          .collection('assignments')
           .doc(docId)
-          .set(seriesTestModel.toMap());
+          .update({'submissions': seriesTestMarksMaps});
       showSnackBar(
           context: context,
-          message: '  Series Test added',
+          message: '  Mark added',
           icon: const Icon(
             Icons.done_outline,
             color: Colors.green,
