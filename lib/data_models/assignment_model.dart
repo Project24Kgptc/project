@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AssignmentModel {
 	final String subjectId;
 	final String title;
@@ -39,3 +41,4 @@ class AssignmentModel {
 		};
 	}
 }
+

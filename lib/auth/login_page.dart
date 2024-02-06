@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/admin_model.dart';
+import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/modules/admin/admin_dash.dart';
 import 'package:student_analytics/data_models/student_model.dart';
@@ -286,9 +287,13 @@ class LoginPage extends StatelessWidget {
             .collection('students')
             .doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
             .get();
-      List<SubjectModel>?subjects=await  getSubjectsByStudentId(studentData['regNo']);
+        List<SubjectModel>? subjects =
+            await getSubjectsByStudentId(studentData['regNo']);
+        List<AttendanceModel> attentence = await getAllAttendance();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => StudentDashboard(subjects: subjects!,
+            builder: (ctx) => StudentDashboard(
+              attentencelist: attentence,
+                subjects: subjects!,
                 studentData:
                     StudentModel.fromMaptoObject(studentData.data()!))));
         _loginFormKey.currentState!.reset();
@@ -413,4 +418,24 @@ class LoginPage extends StatelessWidget {
       return null;
     }
   }
+
+  
 }
+
+//get all Attentence
+  Future<List<AttendanceModel>> getAllAttendance() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('attentence').get();
+
+      List<AttendanceModel> attendance = querySnapshot.docs
+          .map((DocumentSnapshot document) =>
+              AttendanceModel.fromMap(document.data() as Map<String, dynamic>))
+          .toList();
+
+      return attendance;
+    } catch (e) {
+      sss('error: $e');
+      throw e;
+    }
+  }

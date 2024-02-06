@@ -9,6 +9,7 @@ import 'package:student_analytics/data_models/seriestest_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/teacher/subject/add_assignment/ad_markAss.dart';
 import 'package:student_analytics/modules/teacher/subject/add_assignment/add_assignment.dart';
 import 'package:student_analytics/modules/teacher/subject/add_attendance/add_attentence.dart';
 import 'package:student_analytics/modules/teacher/subject/add_seriestest/add_seriestest.dart';
@@ -79,6 +80,19 @@ class TeacherSubjectDashboard extends StatelessWidget {
                         title: Text(model.title),
                         subtitle: Text(model.description),
                         trailing: Text(model.dueDate),
+                        onTap: () async {
+                          List<AddMarkModel>? markModel =
+                              await generateSeriestestModel();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddAssignmentMark(
+                                        assignmentdata: model,
+                                        subjectModel: subjectModel,
+                                        seriesTestMarkModel:
+                                            markModel!.toList(),
+                                      )));
+                        },
                       );
                     }).toList(),
                   );
@@ -139,12 +153,13 @@ class TeacherSubjectDashboard extends StatelessWidget {
             ),
             FutureBuilder(
               future: getAttentence(context),
-              builder: ( context,  snapshot) {
-                if(snapshot.connectionState == ConnectionState.waiting){
-                   return ExpansionTile(
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return ExpansionTile(
                     title: const Text('Attendances'),
                     trailing: IconButton(
-                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      onPressed: () =>
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => AddAttendanceScreen(
                                     batch: subjectModel.batch,
                                     subjectId: subjectModel.subjectId,
@@ -159,12 +174,12 @@ class TeacherSubjectDashboard extends StatelessWidget {
                       )
                     ],
                   );
-                }
-                else if(!snapshot.hasData){
+                } else if (!snapshot.hasData) {
                   return ExpansionTile(
                     title: const Text('Attendances'),
                     trailing: IconButton(
-                      onPressed: () =>Navigator.of(context).push(MaterialPageRoute(
+                      onPressed: () =>
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => AddAttendanceScreen(
                                     batch: subjectModel.batch,
                                     subjectId: subjectModel.subjectId,
@@ -179,8 +194,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
                       )
                     ],
                   );
-                }
-               else   {
+                } else {
                   return ExpansionTile(
                     collapsedBackgroundColor: Colors.deepOrangeAccent,
                     title: const Text('Attendances'),
@@ -197,7 +211,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
                     ),
                     children: snapshot.data!.map((model) {
                       return ListTile(
-                        title: Text(model.date.toString().substring(0,10)),
+                        title: Text(model.date.toString().substring(0, 10)),
                         subtitle: Text(model.hour),
                       );
                     }).toList(),
@@ -265,7 +279,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
     }
   }
 
-  Future<List<SeriesTestMarkModel>?> generateSeriestestModel() async {
+  Future<List<AddMarkModel>?> generateSeriestestModel() async {
     try {
       final QuerySnapshot<Map<String, dynamic>> students =
           await FirebaseFirestore.instance
@@ -278,10 +292,10 @@ class TeacherSubjectDashboard extends StatelessWidget {
           return StudentModel.fromMaptoObject(map.data());
         }).toList();
 
-        final List<SeriesTestMarkModel> studensSeriestestList =
+        final List<AddMarkModel> studensSeriestestList =
             studentsListModel.map((model) {
           final FocusNode focusNode = FocusNode();
-          return SeriesTestMarkModel(
+          return AddMarkModel(
               name: model.name,
               rollNo: model.rollNo,
               regNo: model.regNo,
@@ -300,7 +314,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
   }
 
   Future<void> gotoAddSeriesTestScreen(BuildContext context) async {
-    final List<SeriesTestMarkModel>? seriesTestMarksModel =
+    final List<AddMarkModel>? seriesTestMarksModel =
         await generateSeriestestModel();
     if (seriesTestMarksModel != null && seriesTestMarksModel.isNotEmpty) {
       Navigator.of(context).push(MaterialPageRoute(

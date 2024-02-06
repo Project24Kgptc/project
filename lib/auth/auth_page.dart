@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/admin_model.dart';
+import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/modules/admin/admin_dash.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';
@@ -46,7 +47,8 @@ class AuthScreen extends StatelessWidget {
 			if(studentData.exists) {
 				final StudentModel studentModel = StudentModel.fromMaptoObject(studentData.data()!);
         List<SubjectModel>?subjects=await  getSubjectsByStudentId(studentModel.regNo);
-				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(studentData: studentModel,subjects: subjects!,)));
+        List<AttendanceModel> attentence = await getAllAttendance();
+				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(studentData: studentModel,subjects: subjects!,attentencelist: attentence,)));
 				return;
 			}
 			final teacherData = await FirebaseFirestore.instance.collection('teachers').doc(user.email!.replaceAll('@mail.com', '')).get();

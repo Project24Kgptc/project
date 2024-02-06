@@ -4,21 +4,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/auth/login_page.dart';
+import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
+import 'package:student_analytics/main.dart';
 import 'package:student_analytics/modules/student/subject_dash.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class StudentDashboard extends StatelessWidget {
-  StudentDashboard({super.key, required this.studentData, required this.subjects});
+  StudentDashboard(
+      {super.key,
+      required this.studentData,
+      required this.subjects,
+      required this.attentencelist});
 
   final StudentModel studentData;
   final List<SubjectModel> subjects;
+  final List<AttendanceModel> attentencelist;
 
-  
+  int presentCount = 0;
 
   @override
   Widget build(BuildContext context) {
+    for (var attendance in attentencelist) {
+      if (attendance.studentsList.contains(studentData.rollNo)) {
+        presentCount++;
+      }
+    }
+    double percentage = (presentCount / attentencelist.length) * 100;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -99,7 +112,7 @@ class StudentDashboard extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            const Stack(
+            Stack(
               alignment: Alignment.center,
               children: [
                 SizedBox(
@@ -109,12 +122,15 @@ class StudentDashboard extends StatelessWidget {
                     strokeWidth: 8,
                     color: Colors.deepPurpleAccent,
                     backgroundColor: Colors.grey,
-                    value: 0.75,
+                    value: percentage / 100,
                   ),
                 ),
                 Text(
-                  '${0.75 * 100}%',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
+                  percentage.toString().length > 2
+                      ? percentage.toString().substring(0, 3)+'%'
+                      : percentage.toString()+'%',
+                  style: const TextStyle(
+                      fontSize: 25, fontWeight: FontWeight.w900),
                 )
               ],
             ),
@@ -148,10 +164,20 @@ class StudentDashboard extends StatelessWidget {
                           color: Colors.deepPurpleAccent,
                           borderRadius: BorderRadius.circular(5)),
                       child: ListTile(
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SubjectDashboard(subject: subjects[index],),
-                        )),
+                        onTap: () async {
+                          List<AttendanceModel> attentence =
+                              await getSubjAttendance(
+                                  subjects[index].subjectId);
+
+                          print(attentence[index].subjectName);
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SubjectDashboard(
+                              totalAttentence: attentence,
+                              subject: subjects[index],
+                              studentdata: studentData,
+                            ),
+                          ));
+                        },
                         title: Text(
                           subjects[index].subjectName,
                           style: const TextStyle(
@@ -171,5 +197,24 @@ class StudentDashboard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<List<AttendanceModel>> getSubjAttendance(String subId) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('attentence')
+          .where('subjectId', isEqualTo: subId)
+          .get();
+
+      List<AttendanceModel> attendance = querySnapshot.docs
+          .map((DocumentSnapshot document) =>
+              AttendanceModel.fromMap(document.data() as Map<String, dynamic>))
+          .toList();
+
+      return attendance;
+    } catch (e) {
+      sss('error: $e');
+      throw e;
+    }
   }
 }
