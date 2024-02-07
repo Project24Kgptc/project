@@ -6,6 +6,7 @@ import 'package:student_analytics/data_models/seriestest_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/student/day_attentence.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class SubjectDashboard extends StatelessWidget {
@@ -18,16 +19,15 @@ class SubjectDashboard extends StatelessWidget {
   final StudentModel studentdata;
   final List<AttendanceModel> totalAttentence;
   int presentCount = 0;
-  
 
   @override
   Widget build(BuildContext context) {
     for (var attendance in totalAttentence) {
-      if(attendance.studentsList.contains(studentdata.rollNo)){
+      if (attendance.studentsList.contains(studentdata.rollNo)) {
         presentCount++;
       }
     }
-    double percentage = (presentCount / totalAttentence.length)*100;
+    double percentage = (presentCount / totalAttentence.length) * 100;
     return Scaffold(
       appBar: AppBar(
         title: Text(subject.subjectName),
@@ -72,21 +72,28 @@ class SubjectDashboard extends StatelessWidget {
                       strokeWidth: 8,
                       color: Colors.deepPurpleAccent,
                       backgroundColor: Colors.grey,
-                      value: percentage/100,
+                      value: percentage / 100,
                     ),
                   ),
                   Column(
                     children: [
-                      
                       Text(
-                         percentage.toString().length > 2
-                      ? percentage.toString().substring(0, 4)+'%'
-                      : percentage.toString()+'%',
+                        percentage.toString().length > 2
+                            ? percentage.toString().substring(0, 4) + '%'
+                            : percentage.toString() + '%',
                         style: TextStyle(
                             fontSize: 25, fontWeight: FontWeight.w900),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DayAttentence(
+                                        subject: subject.subjectName,
+                                        attentenceList: totalAttentence,
+                                      )));
+                        },
                         icon: Icon(Icons.expand),
                       )
                     ],
@@ -126,7 +133,7 @@ class SubjectDashboard extends StatelessWidget {
                       children: snapshot.data!.map((model) {
                         String mark = '0';
                         for (var i = 0; i < model.submissions.length; i++) {
-                          model.submissions[i]['regNo'] ==studentdata.regNo
+                          model.submissions[i]['regNo'] == studentdata.regNo
                               ? mark = model.submissions[i]['mark']
                               : '0';
                         }
@@ -179,7 +186,7 @@ class SubjectDashboard extends StatelessWidget {
                       children: snapshot.data!.map((model) {
                         String mark = '0';
                         for (var i = 0; i < model.marks.length; i++) {
-                          model.marks[i]['regNo'] ==studentdata.regNo
+                          model.marks[i]['regNo'] == studentdata.regNo
                               ? mark = model.marks[i]['mark']
                               : '0';
                         }

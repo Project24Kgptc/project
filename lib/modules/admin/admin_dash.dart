@@ -130,7 +130,7 @@ class AdminDashboard extends StatelessWidget {
 	}
 
 	Future<void> navigateToStudentsPage(BuildContext context) async {
-		Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const AdminAllStudentsPage()));
+		Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>  AdminAllStudentsPage(admin: adminModel,)));
 		final students = await FirebaseFirestore.instance.collection('students').get();
 		await Future.delayed(const Duration(microseconds: 100));
 		final List<StudentModel> studentObjectsList = students.docs.map((student) => StudentModel.fromMaptoObject(student.data())).toList();
@@ -149,7 +149,7 @@ class AdminDashboard extends StatelessWidget {
 	}
 
 	Future<void> navigateToTeachersPage(BuildContext context) async {
-		Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const AdminAllTeachersPage()));
+		Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>  AdminAllTeachersPage(admin: adminModel,)));
 		final teachers = await FirebaseFirestore.instance.collection('teachers').get();
 		await Future.delayed(const Duration(microseconds: 100));
 		final List<TeacherModel> teacherObjectsList = teachers.docs.map((student) => TeacherModel.fromMaptoObject(student.data())).toList();
