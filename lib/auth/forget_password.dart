@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/widgets/alert_dialog.dart';
+import 'package:student_analytics/widgets/snack_bar.dart';
 import 'package:student_analytics/widgets/text_field.dart';
-
-import '../../widgets/snack_bar.dart';
 
 class ForgotPassword extends StatelessWidget {
 	ForgotPassword({super.key});
@@ -176,18 +175,6 @@ class ForgotPassword extends StatelessWidget {
 
 	Future<void> sendOtp(BuildContext context) async {
 		try {
-			// await _emailOTP.setConfig(
-			// 	appEmail: 'studentAnalytics24@gmail.com',
-			// 	appName: 'Student Analytics',
-			// 	userEmail: user['email'],
-			// 	otpLength: 4,
-			// 	otpType: OTPType.digitsOnly
-			// );
-			// final bool send = await _emailOTP.sendOTP();
-			// if(send) {
-			// 	Navigator.of(context).push(MaterialPageRoute(builder: (context) => OtpCheckout(emailOTP: _emailOTP, user: user,)));
-			// }
-
 			await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
 			customAlertDialog(
 				context: context,

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_analytics/auth/forget_password/forget_password.dart';
+import 'package:student_analytics/auth/forget_password.dart';
 import 'package:student_analytics/data_models/admin_model.dart';
 import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/main.dart';

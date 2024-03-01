@@ -1,7 +1,4 @@
 import 'package:student_analytics/auth/auth_page.dart';
-import 'package:student_analytics/auth/forget_password/forget_password.dart';
-import 'package:student_analytics/auth/forget_password/password_set.dart';
-import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/firebase_connect/firebase_options.dart';
 import 'package:student_analytics/provider/attendance_provider.dart';
 import 'package:student_analytics/provider/students_provider.dart';
