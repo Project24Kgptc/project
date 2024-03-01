@@ -8,6 +8,7 @@ import 'package:student_analytics/data_models/teacher_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/modules/admin/teachers/add_teacher/teacher_validator.dart';
 import 'package:student_analytics/provider/teachers_provider.dart';
+import 'package:student_analytics/widgets/alert_dialog.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 import '../../../../widgets/text_field.dart';
 
@@ -150,7 +151,13 @@ class AddTeacher extends StatelessWidget {
 			try {
 				final teacherExists = await FirebaseFirestore.instance.collection('teachers').doc(teacherModel.email.replaceAll('@mail.com', '')).get();
 				if(teacherExists.exists) {
-					showTheAlertDialog(context, teacherModel.email, teacherModel);
+					customAlertDialog(
+						context: context,
+						messageText: "Student with Email Number ${teacherModel.email} already exists !",
+						onPrimaryButtonClick: () => Navigator.of(context).pop(),
+						primaryButtonText: 'Back',
+						isSecondButtonVisible: false
+					);
 				}
 				else {
 					await FirebaseFirestore.instance.collection('teachers').doc(teacherModel.email.replaceAll('@mail.com', '')).set(teacherData);
@@ -179,52 +186,6 @@ class AddTeacher extends StatelessWidget {
 				addTeacherButtonLoadingNotifier.value = false;
 			}
 		}
-	}
-
-	Future<void> showTheAlertDialog(BuildContext context, String email, TeacherModel teacherModel) {
-		return showDialog(
-			context: context, 
-			builder: (context) {
-				return AlertDialog(
-					icon: const Icon(Icons.info),
-					content: ConstrainedBox(
-						constraints: const BoxConstraints(
-							maxWidth: 200
-						),
-						child: Text(
-							"Teacher with email $email already exists. Click 'SAVE' to replace exisiting data",
-							textAlign: TextAlign.center,
-						),
-					),
-					actionsAlignment: MainAxisAlignment.spaceAround,
-					actions: [
-						ElevatedButton(
-							onPressed: () async {
-								await FirebaseFirestore.instance.collection('teachers').doc(teacherModel.email.replaceAll('@mail.com', '')).set(teacherModel.toMap());
-								showSnackBar(
-									context: context, 
-									message: '  Teacher added', 
-									icon: const Icon(Icons.done_outline, color: Colors.green,), 
-									duration: 2
-								);
-								Provider.of<TeachersProvider>(context, listen: false).addTeacher(teacherModel);
-								_addTeacherFormkey.currentState!.reset();
-
-								addUserAuth(teacherModel.email);
-								Navigator.pop(context);
-							},
-							child: const Text('Save')
-						),
-						ElevatedButton(
-							onPressed: () {
-								Navigator.pop(context);
-							},
-							child: const Text('Discard')
-						),
-					],
-				);
-			}
-		);
 	}
 
 	Future<void> addUserAuth(String email) async {

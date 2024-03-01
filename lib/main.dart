@@ -1,8 +1,11 @@
+import 'package:student_analytics/auth/auth_page.dart';
+import 'package:student_analytics/auth/forget_password/forget_password.dart';
+import 'package:student_analytics/auth/forget_password/password_set.dart';
+import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/firebase_connect/firebase_options.dart';
 import 'package:student_analytics/provider/attendance_provider.dart';
 import 'package:student_analytics/provider/students_provider.dart';
 import 'package:student_analytics/provider/batch_provider.dart';
-import 'package:student_analytics/auth/auth_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
-		return MaterialApp(
+		return  MaterialApp(
 			debugShowCheckedModeBanner: false,
 			home: AuthScreen()
 		);

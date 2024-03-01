@@ -15,6 +15,8 @@ import 'package:student_analytics/provider/subject_provider.dart';
 import 'package:student_analytics/modules/student/std_dash.dart';
 import 'package:student_analytics/modules/teacher/teacher_dash.dart';
 
+import '../main.dart';
+
 class AuthScreen extends StatelessWidget {
 	AuthScreen({super.key});
 
@@ -43,12 +45,12 @@ class AuthScreen extends StatelessWidget {
 			Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => LoginPage()));
 		}
 		else {
-			final studentData = await FirebaseFirestore.instance.collection('students').doc(user.email!.replaceAll('@mail.com', '')).get();
+			final studentData = await FirebaseFirestore.instance.collection('students').doc(user.email).get();
 			if(studentData.exists) {
 				final StudentModel studentModel = StudentModel.fromMaptoObject(studentData.data()!);
-        List<SubjectModel>?subjects=await  getSubjectsByStudentId(studentModel.regNo);
-        List<AttendanceModel> attentence = await getAllAttendance();
-				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(studentData: studentModel,subjects: subjects!,attentencelist: attentence,)));
+				List<SubjectModel>? subjects = await  getSubjects(studentModel);
+				List<AttendanceModel> attentence = await getAllAttendance();
+				Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(studentData: studentModel, subjects: subjects, attentencelist: attentence,)));
 				return;
 			}
 			final teacherData = await FirebaseFirestore.instance.collection('teachers').doc(user.email!.replaceAll('@mail.com', '')).get();
@@ -72,47 +74,46 @@ class AuthScreen extends StatelessWidget {
 		}
 	}
 
-  //get subject list of  students
-  Future<List<SubjectModel>?> getSubjectsByStudentId(String studentId) async {
-    try {
-      // Step 1: Fetch student document
-      final studentData = await FirebaseFirestore.instance
-          .collection('students')
-          .doc(studentId)
-          .get();
+    Future<List<SubjectModel>> getSubjects(StudentModel studentModel) async {
+		try {
+			final List<String> subjectIds = List<String>.from(studentModel.subjects);
 
-      if (studentData.exists) {
-        // Step 2: Retrieve subject IDs from the student document
-        final List<String> subjectIds =
-            List<String>.from(studentData['subjects']);
+			if (subjectIds.isNotEmpty) {
+				final subjects = await FirebaseFirestore.instance
+					.collection('subjects')
+					.where('subjectId', whereIn: subjectIds)
+					.get();
 
-        if (subjectIds.isNotEmpty) {
-          // Step 3: Fetch corresponding subject documents
-          final data = await FirebaseFirestore.instance
-              .collection('subjects')
-              .where('subjectId', whereIn: subjectIds)
-              .get();
+				final List<SubjectModel> subjectList = subjects.docs
+					.map((e) => SubjectModel.fromMaptoObject(e.data()))
+					.toList();
 
-          if (data.docs.isNotEmpty) {
-            final List<SubjectModel> subjectList = data.docs
-                .map((e) => SubjectModel.fromMaptoObject(e.data()))
-                .toList();
-            return subjectList;
-          } else {
-            return null;
-          }
-        } else {
-          // No subject IDs in the student document
-          return null;
-        }
-      } else {
-        // Student document not found
-        return null;
-      }
-    } catch (e) {
-      // Handle any exceptions
-      print('Error: $e');
-      return null;
-    }
-  }
+				return subjectList;
+			}
+			else {
+				return [];
+			}
+		}
+		catch (e) {
+			sss('Error: $e');
+			return [];
+		}
+	}
+
+
+  	Future<List<AttendanceModel>> getAllAttendance() async {
+		try {
+			QuerySnapshot attendances = await FirebaseFirestore.instance.collection('attentence').get();
+
+			List<AttendanceModel> attendance = attendances.docs.map((DocumentSnapshot document) => 
+				AttendanceModel.fromMap(document.data() as Map<String, dynamic>)
+			).toList();
+
+			return attendance;
+		}
+		catch (e) {
+			sss('error: $e');
+			rethrow;
+		}
+	}
 }

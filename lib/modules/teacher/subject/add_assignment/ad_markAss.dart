@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +9,6 @@ import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/widgets/alert_dialog.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
-import 'package:student_analytics/widgets/text_field.dart';
 
 class AddAssignmentMark extends StatelessWidget {
   AddAssignmentMark(

@@ -12,26 +12,20 @@ import 'package:student_analytics/modules/student/subject_dash.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class StudentDashboard extends StatelessWidget {
-  StudentDashboard(
-      {super.key,
+  StudentDashboard({super.key,
       required this.studentData,
       required this.subjects,
-      required this.attentencelist});
+      required this.attentencelist
+  }): percentage = getPresentCount(attentencelist, studentData);
 
   final StudentModel studentData;
   final List<SubjectModel> subjects;
   final List<AttendanceModel> attentencelist;
 
-  int presentCount = 0;
+   final double percentage;
 
   @override
   Widget build(BuildContext context) {
-    for (var attendance in attentencelist) {
-      if (attendance.studentsList.contains(studentData.rollNo)) {
-        presentCount++;
-      }
-    }
-    double percentage = (presentCount / attentencelist.length) * 100;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -122,13 +116,13 @@ class StudentDashboard extends StatelessWidget {
                     strokeWidth: 8,
                     color: Colors.deepPurpleAccent,
                     backgroundColor: Colors.grey,
-                    value: percentage / 100,
+                    value: (percentage / 100),
                   ),
                 ),
                 Text(
                   percentage.toString().length > 2
-                      ? percentage.toString().substring(0, 3)+'%'
-                      : percentage.toString()+'%',
+                      ? '${percentage.toString().substring(0, 3)}%'
+                      : '$percentage%',
                   style: const TextStyle(
                       fontSize: 25, fontWeight: FontWeight.w900),
                 )
@@ -169,12 +163,11 @@ class StudentDashboard extends StatelessWidget {
                               await getSubjAttendance(
                                   subjects[index].subjectId);
 
-                          print(attentence[index].subjectName);
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => SubjectDashboard(
                               totalAttentence: attentence,
                               subject: subjects[index],
-                              studentdata: studentData,
+                              studentData: studentData,
                             ),
                           ));
                         },
@@ -214,7 +207,15 @@ class StudentDashboard extends StatelessWidget {
       return attendance;
     } catch (e) {
       sss('error: $e');
-      throw e;
+      rethrow;
     }
   }
+
+	static double getPresentCount(List<AttendanceModel> attentencelist, StudentModel studentData) {
+		final int presentCount = attentencelist.fold(0, (count, attendance) =>
+			count + (attendance.studentsList.contains(studentData.rollNo) ? 1 : 0),
+		);
+		final double percantage = (presentCount / (attentencelist.isEmpty ? 1 : attentencelist.length)) * 100;
+		return percantage;
+	}
 }
