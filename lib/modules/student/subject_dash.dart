@@ -73,12 +73,11 @@ class SubjectDashboard extends StatelessWidget {
                       strokeWidth: 8,
                       color: Colors.deepPurpleAccent,
                       backgroundColor: Colors.grey,
-                      value: percentage/100,
+                      value: percentage / 100,
                     ),
                   ),
                   Column(
                     children: [
-                      
                       Text(
                          percentage.toString().length > 2
                       ? '${percentage.toString().substring(0, 4)}%'
@@ -210,7 +209,6 @@ class SubjectDashboard extends StatelessWidget {
       if (data.docs.isNotEmpty) {
         final List<AssignmentModel> assignmentsList =
             data.docs.map((e) => (AssignmentModel.fromJson(e.data()))).toList();
-        print(assignmentsList);
         return assignmentsList;
       } else {
         return null;
