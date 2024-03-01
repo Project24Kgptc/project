@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
 		super.key, 
 		this.onTap,
 		this.onChange,
+		this.onFieldSubmit,
 		this.hintText, 
 		this.focusNode,
 		this.suffixIcon,
@@ -26,6 +27,7 @@ class CustomTextField extends StatelessWidget {
 	final void Function()? onTap;
 	final TextInputType? keyboardType;
 	final void Function(String)? onChange;
+	final void Function(String)? onFieldSubmit;
 	final String? Function(String?) validator;
 
 	@override
@@ -38,6 +40,7 @@ class CustomTextField extends StatelessWidget {
 			onChanged: onChange,
 			onTap: onTap,
 			focusNode: focusNode,
+			onFieldSubmitted: onFieldSubmit,
 			decoration: InputDecoration(
 				contentPadding: const EdgeInsets.all(0),
 				prefixIcon: Icon(prefixIcon),

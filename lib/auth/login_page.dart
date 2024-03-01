@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_analytics/auth/forget_password.dart';
 import 'package:student_analytics/data_models/admin_model.dart';
 import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/main.dart';
@@ -21,7 +22,6 @@ class LoginPage extends StatelessWidget {
 
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
 
-  final ValueNotifier<bool> _selectedLoginNotifier = ValueNotifier(true);
   final ValueNotifier<bool> _loginButtonLoadingNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _passwordVisibleNotifier = ValueNotifier(false);
   final ValueNotifier<String> _loginErrorMessageNotifier = ValueNotifier('');
@@ -46,76 +46,7 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                InkWell(
-                  onTap: () => _selectedLoginNotifier.value =
-                      !_selectedLoginNotifier.value,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 10),
-                    decoration: BoxDecoration(
-                        color: const Color(0xFF5063A3),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Stack(
-                      children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                'Student',
-                                style: TextStyle(
-                                    color: Color(0xFFF1F1F1),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                'Teacher',
-                                style: TextStyle(
-                                    color: Color(0xFFF1F1F1),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800),
-                              ),
-                            ),
-                          ],
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: _selectedLoginNotifier,
-                          builder: (context, value, child) {
-                            return AnimatedPositioned(
-                                left: value
-                                    ? 0
-                                    : (MediaQuery.of(context).size.width / 2) -
-                                        95,
-                                duration: const Duration(milliseconds: 250),
-                                child: Container(
-                                  width:
-                                      (MediaQuery.of(context).size.width / 2) -
-                                          75,
-                                  decoration: BoxDecoration(
-                                      color: Colors.deepPurpleAccent,
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text(
-                                      value ? 'Student' : 'Teacher',
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w800),
-                                    ),
-                                  ),
-                                ));
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+				const SizedBox(height: 20,),
                 Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Form(
@@ -144,41 +75,23 @@ class LoginPage extends StatelessWidget {
                             },
                           ),
                           const SizedBox(height: 15),
-                          ValueListenableBuilder(
-                            valueListenable: _selectedLoginNotifier,
-                            builder: (context, value, child) {
-                              return CustomTextField(
-                                controller: _emailController,
-                                keyboardType: value
-                                    ? TextInputType.number
-                                    : TextInputType.emailAddress,
-                                labelText: value ? 'Register Number' : 'Email',
-                                prefixIcon: Icons.email,
-                                onChange: (_) =>
-                                    _loginErrorMessageNotifier.value = '',
-                                validator: (input) {
-                                  if (value) {
-                                    final RegExp regNoRegEx =
-                                        RegExp(r'^[0-9]+$');
-                                    if (input!.trim() == '') {
-                                      return 'Please enter your Register Number';
-                                    } else if (input.trim().length != 4 ||
-                                        !regNoRegEx.hasMatch(input)) {
-                                      return 'Please provide a valid Register number';
-                                    }
-                                  } else {
-                                    final RegExp emailRegExp = RegExp(
-                                        r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-                                    if (input!.trim() == '') {
-                                      return "Please enter your email";
-                                    } else if (!emailRegExp
-                                        .hasMatch(input.trim())) {
-                                      return 'Please provide a valid email !';
-                                    }
-                                  }
-                                  return null;
-                                },
-                              );
+                          CustomTextField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            labelText: 'Email',
+                            prefixIcon: Icons.email,
+                            onChange: (_) =>
+                                _loginErrorMessageNotifier.value = '',
+                            validator: (input) {
+                               final RegExp emailRegExp = RegExp(
+                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+                                if (input!.trim() == '') {
+                                  return "Please enter your email";
+                                } else if (!emailRegExp
+                                    .hasMatch(input.trim())) {
+                                  return 'Please provide a valid email !';
+                                }
+                              return null;
                             },
                           ),
                           const SizedBox(
@@ -216,7 +129,23 @@ class LoginPage extends StatelessWidget {
                             },
                           ),
                           const SizedBox(
-                            height: 20,
+                            height: 10,
+                          ),
+						  Align(
+							alignment: Alignment.bottomRight,
+							child: TextButton(
+							onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword(),)), 
+							child: const Text(
+								'forget password', 
+								textAlign: TextAlign.right, 
+								style: TextStyle(
+									color: Colors.black
+								),
+							)
+						  ),
+						  ),
+                          const SizedBox(
+                            height: 10,
                           ),
                           Container(
                             height: 45,
@@ -231,11 +160,7 @@ class LoginPage extends StatelessWidget {
                                     )),
                                 onPressed: () {
                                   if (_loginFormKey.currentState!.validate()) {
-                                    if (_selectedLoginNotifier.value) {
-                                      studentLoginFunctionality(context);
-                                    } else {
-                                      teacherLoginFunctionality(context);
-                                    }
+                                    login(context);
                                   }
                                 },
                                 child: ValueListenableBuilder(
@@ -254,7 +179,9 @@ class LoginPage extends StatelessWidget {
                                       return const Text('Login',
                                           style: TextStyle(
                                               fontSize: 19,
-                                              fontWeight: FontWeight.w900));
+                                              fontWeight: FontWeight.w900
+											)
+										);
                                     }
                                   },
                                 )),
@@ -273,49 +200,89 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Future<void> studentLoginFunctionality(BuildContext context) async {
-    if (_passwordController.text.trim().length > 5) {
-      _loginButtonLoadingNotifier.value = true;
-      FirebaseAuth auth = FirebaseAuth.instance;
-      try {
-        final UserCredential userCredential =
-            await auth.signInWithEmailAndPassword(
-                email: '${_emailController.text.trim()}@mail.com',
-                password: _passwordController.text.trim());
+	Future<void> login(BuildContext context) async {
+		if (_passwordController.text.trim().length > 5) {
+			_loginButtonLoadingNotifier.value = true;
+			FirebaseAuth auth = FirebaseAuth.instance;
+			try {
+				final UserCredential userCredential = await auth.signInWithEmailAndPassword(
+					email: _emailController.text.trim(),
+					password: _passwordController.text.trim()
+				);
+				
+				/***********************************************************************************************/
+				final studentData = await FirebaseFirestore.instance
+				.collection('students').doc(userCredential.user!.email!)
+				.get();
+				if (studentData.exists) {
+					_loginFormKey.currentState!.reset();
+					final StudentModel studentModel = StudentModel.fromMaptoObject(studentData.data()!);
+					final List<SubjectModel> subjectList = await getSubjects(studentModel);
+					final List<AttendanceModel> attendances = await getAllAttendance();
+					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => StudentDashboard(subjects: subjectList, studentData: studentModel, attentencelist: attendances,)));
+					return;
+				}
+				/***********************************************************************************************/
 
-        final studentData = await FirebaseFirestore.instance
-            .collection('students')
-            .doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
-            .get();
-        List<SubjectModel>? subjects =
-            await getSubjectsByStudentId(studentData['regNo']);
-        List<AttendanceModel> attentence = await getAllAttendance();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => StudentDashboard(
-              attentencelist: attentence,
-                subjects: subjects!,
-                studentData:
-                    StudentModel.fromMaptoObject(studentData.data()!))));
-        _loginFormKey.currentState!.reset();
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'invalid-credential') {
-          _loginErrorMessageNotifier.value =
-              '  Incorrect Register Number or Password !';
-        }
-      } catch (err) {
-        sss(err);
-        _loginErrorMessageNotifier.value = '  Something went wrong !';
-      } finally {
-        _loginButtonLoadingNotifier.value = false;
-      }
-    } else {
-      await Future.delayed(const Duration(seconds: 1));
-      _loginErrorMessageNotifier.value =
-          '  Incorrect Register Number or Password !';
-    }
-  }
 
-  Future<void> teacherLoginFunctionality(BuildContext context) async {
+				/***********************************************************************************************/
+				final teacherData = await FirebaseFirestore.instance
+				.collection('teacher').doc(userCredential.user!.email!)
+				.get();
+				if (teacherData.exists) {
+					_loginFormKey.currentState!.reset();
+					final TeacherModel teacherModel = TeacherModel.fromMaptoObject(teacherData.data()!);
+					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => TeacherDashboard(teacherData: teacherModel,)));
+					return;
+				}
+				/***********************************************************************************************/
+
+
+				/***********************************************************************************************/
+				final adminData = await FirebaseFirestore.instance
+				.collection('admins').doc(userCredential.user!.email!)
+				.get();
+				if (adminData.exists) {
+					_loginFormKey.currentState!.reset();
+					final AdminModel adminModel = AdminModel.fromMaptoObject(adminData.data()!);
+					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => AdminDashboard(adminModel: adminModel)));
+					return;
+				}
+				/***********************************************************************************************/
+
+				// final studentData = await FirebaseFirestore.instance
+				// 	.collection('students')
+				// 	.doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
+				// 	.get();
+				// List<SubjectModel>? subjects =
+				// 	await getSubjectsByStudentId(studentData['regNo']);
+				// List<AttendanceModel> attentence = await getAllAttendance();
+				// Navigator.of(context).pushReplacement(MaterialPageRoute(
+				// 	builder: (ctx) => StudentDashboard(
+				// 	attentencelist: attentence,
+				// 		subjects: subjects!,
+				// 		studentData:
+				// 			StudentModel.fromMaptoObject(studentData.data()!))));
+				// _loginFormKey.currentState!.reset();
+			} on FirebaseAuthException catch (e) {
+				if (e.code == 'invalid-credential') {
+				_loginErrorMessageNotifier.value =
+					'  Incorrect Email Number or Password !';
+				}
+			} catch (err) {
+				sss(err);
+				_loginErrorMessageNotifier.value = '  Something went wrong !';
+			} finally {
+				_loginButtonLoadingNotifier.value = false;
+			}
+			} else {
+			await Future.delayed(const Duration(seconds: 1));
+			_loginErrorMessageNotifier.value =
+				'  Incorrect Register Number or Password !';
+		}
+	}
+
+  	Future<void> teacherLoginFunctionality(BuildContext context) async {
     if (_passwordController.text.trim().length > 5) {
       _loginButtonLoadingNotifier.value = true;
       FirebaseAuth auth = FirebaseAuth.instance;
@@ -375,67 +342,45 @@ class LoginPage extends StatelessWidget {
     }
   }
 
-  //get subject list of  students
-  Future<List<SubjectModel>?> getSubjectsByStudentId(String studentId) async {
-    try {
-      // Step 1: Fetch student document
-      final studentData = await FirebaseFirestore.instance
-          .collection('students')
-          .doc(studentId)
-          .get();
+  	Future<List<SubjectModel>> getSubjects(StudentModel studentModel) async {
+		try {
+			final List<String> subjectIds = List<String>.from(studentModel.subjects);
 
-      if (studentData.exists) {
-        // Step 2: Retrieve subject IDs from the student document
-        final List<String> subjectIds =
-            List<String>.from(studentData['subjects']);
+			if (subjectIds.isNotEmpty) {
+				final subjects = await FirebaseFirestore.instance
+					.collection('subjects')
+					.where('subjectId', whereIn: subjectIds)
+					.get();
 
-        if (subjectIds.isNotEmpty) {
-          // Step 3: Fetch corresponding subject documents
-          final data = await FirebaseFirestore.instance
-              .collection('subjects')
-              .where('subjectId', whereIn: subjectIds)
-              .get();
+				final List<SubjectModel> subjectList = subjects.docs
+					.map((e) => SubjectModel.fromMaptoObject(e.data()))
+					.toList();
 
-          if (data.docs.isNotEmpty) {
-            final List<SubjectModel> subjectList = data.docs
-                .map((e) => SubjectModel.fromMaptoObject(e.data()))
-                .toList();
-            return subjectList;
-          } else {
-            return null;
-          }
-        } else {
-          // No subject IDs in the student document
-          return null;
-        }
-      } else {
-        // Student document not found
-        return null;
-      }
-    } catch (e) {
-      // Handle any exceptions
-      print('Error: $e');
-      return null;
-    }
-  }
+				return subjectList;
+			}
+			else {
+				return [];
+			}
+		}
+		catch (e) {
+			sss('Error: $e');
+			return [];
+		}
+	}
+	
+	Future<List<AttendanceModel>> getAllAttendance() async {
+		try {
+			QuerySnapshot attendances = await FirebaseFirestore.instance.collection('attentence').get();
 
-  
+			List<AttendanceModel> attendance = attendances.docs.map((DocumentSnapshot document) => 
+				AttendanceModel.fromMap(document.data() as Map<String, dynamic>)
+			).toList();
+
+			return attendance;
+		}
+		catch (e) {
+			sss('error: $e');
+			rethrow;
+		}
+	}
 }
-
-//get all Attentence
-  Future<List<AttendanceModel>> getAllAttendance() async {
-    try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('attentence').get();
-
-      List<AttendanceModel> attendance = querySnapshot.docs
-          .map((DocumentSnapshot document) =>
-              AttendanceModel.fromMap(document.data() as Map<String, dynamic>))
-          .toList();
-
-      return attendance;
-    } catch (e) {
-      sss('error: $e');
-      throw e;
-    }
-  }
