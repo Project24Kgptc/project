@@ -1,5 +1,6 @@
 import 'package:student_analytics/auth/auth_page.dart';
 import 'package:student_analytics/firebase_connect/firebase_options.dart';
+import 'package:student_analytics/modules/teacher/subject/add_studyMaterial/add_stdyMaterial.dart';
 import 'package:student_analytics/provider/attendance_provider.dart';
 import 'package:student_analytics/provider/students_provider.dart';
 import 'package:student_analytics/provider/batch_provider.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
 	Widget build(BuildContext context) {
 		return  MaterialApp(
 			debugShowCheckedModeBanner: false,
-			home: AuthScreen()
+			home:AuthScreen(),
 		);
 	}
 }

@@ -7,12 +7,14 @@ import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/data_models/seriestest_mark_model.dart';
 import 'package:student_analytics/data_models/seriestest_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
+import 'package:student_analytics/data_models/study_materials.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
 import 'package:student_analytics/modules/teacher/subject/add_assignment/ad_markAss.dart';
 import 'package:student_analytics/modules/teacher/subject/add_assignment/add_assignment.dart';
 import 'package:student_analytics/modules/teacher/subject/add_attendance/add_attentence.dart';
 import 'package:student_analytics/modules/teacher/subject/add_seriestest/add_seriestest.dart';
+import 'package:student_analytics/modules/teacher/subject/add_studyMaterial/add_stdyMaterial.dart';
 import 'package:student_analytics/widgets/alert_dialog.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
@@ -219,6 +221,63 @@ class TeacherSubjectDashboard extends StatelessWidget {
                 }
               },
             ),
+            //StudyMaterials
+             const SizedBox(
+              height: 5,
+            ),
+            FutureBuilder(
+              future: getStudyMaterials(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return ExpansionTile(
+                    title: const Text('Study Materials'),
+                    trailing: IconButton(
+                      onPressed: () =>
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => AddStudyMaterials(semester: subjectModel.semester,subject:subjectModel.subjectName ,))),
+                      icon: const Icon(Icons.add),
+                    ),
+                    children: const [
+                      ListTile(
+                        title: Center(child: CircularProgressIndicator()),
+                      )
+                    ],
+                  );
+                } else if (!snapshot.hasData) {
+                  return ExpansionTile(
+                    title: const Text('Study Materials'),
+                    trailing: IconButton(
+                      onPressed: () =>
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => AddStudyMaterials(semester: subjectModel.semester,subject:subjectModel.subjectName ,))),
+                      icon: const Icon(Icons.add),
+                    ),
+                    children: const [
+                      ListTile(
+                        title: Text('No data'),
+                      )
+                    ],
+                  );
+                } else {
+                  return ExpansionTile(
+                    collapsedBackgroundColor: Colors.deepOrangeAccent,
+                    title: const Text('Study Materials'),
+                    trailing: IconButton(
+                      onPressed: () =>
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => AddStudyMaterials(semester: subjectModel.semester,subject:subjectModel.subjectName ,))),
+                      icon: const Icon(Icons.add),
+                    ),
+                    children: snapshot.data!.map((model) {
+                      return ListTile(
+                        title: Text(model.name.toString().substring(0, 10)),
+                        subtitle: Text(model.semester),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -342,6 +401,32 @@ class TeacherSubjectDashboard extends StatelessWidget {
         final List<AttendanceModel> attentenceList =
             data.docs.map((e) => (AttendanceModel.fromMap(e.data()))).toList();
         return attentenceList;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      sss(err);
+      showSnackBar(
+          context: context,
+          message: '  Error occured !',
+          icon: const Icon(
+            Icons.error,
+            color: Colors.red,
+          ));
+      return null;
+    }
+  }
+
+  //get Study Materials
+  Future<List<StudyMaterialModel>?> getStudyMaterials(BuildContext context) async {
+    try {
+      final data = await FirebaseFirestore.instance
+          .collection('study_materials').where('subject',isEqualTo: subjectModel.subjectName)
+          .get();
+      if (data.docs.isNotEmpty) {
+        final List<StudyMaterialModel> studyMaterialList =
+            data.docs.map((e) => (StudyMaterialModel.fromMaptoObject(e.data()))).toList();
+        return studyMaterialList;
       } else {
         return null;
       }
