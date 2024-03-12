@@ -222,7 +222,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
               },
             ),
             //StudyMaterials
-             const SizedBox(
+            const SizedBox(
               height: 5,
             ),
             FutureBuilder(
@@ -234,7 +234,10 @@ class TeacherSubjectDashboard extends StatelessWidget {
                     trailing: IconButton(
                       onPressed: () =>
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddStudyMaterials(semester: subjectModel.semester,subject:subjectModel.subjectName ,))),
+                              builder: (ctx) => AddStudyMaterials(
+                                    semester: subjectModel.semester,
+                                    subject: subjectModel.subjectName,
+                                  ))),
                       icon: const Icon(Icons.add),
                     ),
                     children: const [
@@ -249,7 +252,10 @@ class TeacherSubjectDashboard extends StatelessWidget {
                     trailing: IconButton(
                       onPressed: () =>
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddStudyMaterials(semester: subjectModel.semester,subject:subjectModel.subjectName ,))),
+                              builder: (ctx) => AddStudyMaterials(
+                                    semester: subjectModel.semester,
+                                    subject: subjectModel.subjectName,
+                                  ))),
                       icon: const Icon(Icons.add),
                     ),
                     children: const [
@@ -265,12 +271,15 @@ class TeacherSubjectDashboard extends StatelessWidget {
                     trailing: IconButton(
                       onPressed: () =>
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddStudyMaterials(semester: subjectModel.semester,subject:subjectModel.subjectName ,))),
+                              builder: (ctx) => AddStudyMaterials(
+                                    semester: subjectModel.semester,
+                                    subject: subjectModel.subjectName,
+                                  ))),
                       icon: const Icon(Icons.add),
                     ),
                     children: snapshot.data!.map((model) {
                       return ListTile(
-                        title: Text(model.name.toString().substring(0, 10)),
+                        title: Text(model.name.toString()),
                         subtitle: Text(model.semester),
                       );
                     }).toList(),
@@ -418,14 +427,17 @@ class TeacherSubjectDashboard extends StatelessWidget {
   }
 
   //get Study Materials
-  Future<List<StudyMaterialModel>?> getStudyMaterials(BuildContext context) async {
+  Future<List<StudyMaterialModel>?> getStudyMaterials(
+      BuildContext context) async {
     try {
       final data = await FirebaseFirestore.instance
-          .collection('study_materials').where('subject',isEqualTo: subjectModel.subjectName)
+          .collection('study_materials')
+          .where('subject', isEqualTo: subjectModel.subjectName)
           .get();
       if (data.docs.isNotEmpty) {
-        final List<StudyMaterialModel> studyMaterialList =
-            data.docs.map((e) => (StudyMaterialModel.fromMaptoObject(e.data()))).toList();
+        final List<StudyMaterialModel> studyMaterialList = data.docs
+            .map((e) => (StudyMaterialModel.fromMaptoObject(e.data())))
+            .toList();
         return studyMaterialList;
       } else {
         return null;

@@ -169,6 +169,7 @@ class AddStudent extends StatelessWidget {
 				batch: batchController.text.trim(),
 				subjects: [],
 				rank: '1',
+        profile: '',
 			);
 			final studentData = student.toMap();
 			try {

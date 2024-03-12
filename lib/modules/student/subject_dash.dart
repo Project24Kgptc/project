@@ -1,26 +1,33 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/data_models/assignment_model.dart';
 import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/data_models/seriestest_model.dart';
 import 'package:student_analytics/data_models/student_model.dart';
+import 'package:student_analytics/data_models/study_materials.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/main.dart';
+import 'package:student_analytics/modules/student/day_attentence.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
 class SubjectDashboard extends StatelessWidget {
-  SubjectDashboard({
-	super.key,
-	required this.subject,
-	required this.studentData,
-	required this.totalAttentence
-  }): presentCount = getPresentCount(totalAttentence, studentData);
+  SubjectDashboard(
+      {super.key,
+      required this.subject,
+      required this.studentData,
+      required this.totalAttentence})
+      : presentCount = getPresentCount(totalAttentence, studentData);
 
   final SubjectModel subject;
   final StudentModel studentData;
   final List<AttendanceModel> totalAttentence;
   final int presentCount;
-  
+
   @override
   Widget build(BuildContext context) {
     // for (var attendance in totalAttentence) {
@@ -28,7 +35,7 @@ class SubjectDashboard extends StatelessWidget {
     //     presentCount++;
     //   }
     // }
-    double percentage = (presentCount / totalAttentence.length)*100;
+    double percentage = (presentCount / totalAttentence.length) * 100;
     return Scaffold(
       appBar: AppBar(
         title: Text(subject.subjectName),
@@ -79,14 +86,21 @@ class SubjectDashboard extends StatelessWidget {
                   Column(
                     children: [
                       Text(
-                         percentage.toString().length > 2
-                      ? '${percentage.toString().substring(0, 4)}%'
-                      : '$percentage%',
+                        percentage.toString().length > 3
+                            ? '${percentage.toString().substring(0, 4)}%'
+                            : '$percentage%',
                         style: const TextStyle(
                             fontSize: 25, fontWeight: FontWeight.w900),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DayAttentence(
+                                      subject: subject.subjectName,
+                                      attentenceList: totalAttentence)));
+                        },
                         icon: const Icon(Icons.expand),
                       )
                     ],
@@ -126,7 +140,7 @@ class SubjectDashboard extends StatelessWidget {
                       children: snapshot.data!.map((model) {
                         String mark = '0';
                         for (var i = 0; i < model.submissions.length; i++) {
-                          model.submissions[i]['regNo'] ==studentData.regNo
+                          model.submissions[i]['regNo'] == studentData.regNo
                               ? mark = model.submissions[i]['mark']
                               : '0';
                         }
@@ -179,7 +193,7 @@ class SubjectDashboard extends StatelessWidget {
                       children: snapshot.data!.map((model) {
                         String mark = '0';
                         for (var i = 0; i < model.marks.length; i++) {
-                          model.marks[i]['regNo'] ==studentData.regNo
+                          model.marks[i]['regNo'] == studentData.regNo
                               ? mark = model.marks[i]['mark']
                               : '0';
                         }
@@ -193,11 +207,86 @@ class SubjectDashboard extends StatelessWidget {
                   }
                 },
               ),
+              const SizedBox(
+                height: 2,
+              ),
+              FutureBuilder(
+                future: getStudyMaterials(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const ExpansionTile(
+                      collapsedBackgroundColor: Colors.deepPurpleAccent,
+                      title: Text('Study Materials'),
+                      children: [
+                        ListTile(
+                          title: Center(child: CircularProgressIndicator()),
+                        )
+                      ],
+                    );
+                  } else if (!snapshot.hasData) {
+                    return const ExpansionTile(
+                      title: Text('Study Materials'),
+                      collapsedBackgroundColor: Colors.deepPurpleAccent,
+                      children: [
+                        ListTile(
+                          title: Text('No data'),
+                        )
+                      ],
+                    );
+                  } else {
+                    return ExpansionTile(
+                      collapsedBackgroundColor: Colors.deepPurpleAccent,
+                      title: const Text('Study Materials'),
+                      children: snapshot.data!.map((model) {
+                        return ListTile(
+                          title: Text(model.name),
+                          leading: Icon(
+                            Icons.file_present,
+                            color: Colors.red,
+                          ),
+                          trailing: IconButton(
+                              onPressed: () async {
+                                await downloadFile(model.downloadUrl, context);
+                              },
+                              icon: Icon(Icons.download)),
+                        );
+                      }).toList(),
+                    );
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> downloadFile(String downloadUrl, context) async {
+    try {
+      final response = await http.get(Uri.parse(downloadUrl));
+      if (response.statusCode == 200) {
+        final appDir = await getExternalStorageDirectory();
+        final filePath =
+            '${appDir!.path}/downloaded_file.pdf'; // Change the file extension based on your file type
+
+        final file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+
+        // File downloaded successfully
+        print('File downloaded to: $filePath');
+        showSnackBar(
+            context: context,
+            message: 'File downloaded to: $filePath',
+            icon: Icon(Icons.download_done_rounded));
+      } else {
+        // Handle HTTP error
+        print('HTTP error: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error downloading file: $e');
+    }
   }
 
   Future<List<AssignmentModel>?> getAssignments(BuildContext context) async {
@@ -254,11 +343,43 @@ class SubjectDashboard extends StatelessWidget {
     }
   }
 
-  static int getPresentCount(List<AttendanceModel> attentencelist, StudentModel studentData) {
-    int presentCount = attentencelist.fold(0, (count, attendance) =>
-       count + (attendance.studentsList.contains(studentData.rollNo) ? 1 : 0),
+  static int getPresentCount(
+      List<AttendanceModel> attentencelist, StudentModel studentData) {
+    int presentCount = attentencelist.fold(
+      0,
+      (count, attendance) =>
+          count +
+          (attendance.studentsList.contains(studentData.rollNo) ? 1 : 0),
     );
 
     return presentCount;
+  }
+
+  Future<List<StudyMaterialModel>?> getStudyMaterials(
+      BuildContext context) async {
+    try {
+      final data = await FirebaseFirestore.instance
+          .collection('study_materials')
+          .where('subject', isEqualTo: subject.subjectName)
+          .get();
+      if (data.docs.isNotEmpty) {
+        final List<StudyMaterialModel> studyMaterialList = data.docs
+            .map((e) => (StudyMaterialModel.fromMaptoObject(e.data())))
+            .toList();
+        return studyMaterialList;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      sss(err);
+      showSnackBar(
+          context: context,
+          message: '  Error occured !',
+          icon: const Icon(
+            Icons.error,
+            color: Colors.red,
+          ));
+      return null;
+    }
   }
 }

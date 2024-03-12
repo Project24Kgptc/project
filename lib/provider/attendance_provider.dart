@@ -38,6 +38,7 @@ class AttendanceProvider extends ChangeNotifier {
             batch: data['batch'],
             rank: data['rank'],
             subjects: ['you can change'],
+            profile:data['profile']
             );
       }).toList();
       notifyListeners();
