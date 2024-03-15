@@ -80,14 +80,14 @@ class SubjectDashboard extends StatelessWidget {
                       strokeWidth: 8,
                       color: Colors.deepPurpleAccent,
                       backgroundColor: Colors.grey,
-                      value: percentage / 100,
+                      value: 0.1,
                     ),
                   ),
                   Column(
                     children: [
                       Text(
                         percentage.toString().length > 3
-                            ? '${percentage.toString().substring(0, 4)}%'
+                            ? '${percentage.toString().substring(0, 3)}%'
                             : '$percentage%',
                         style: const TextStyle(
                             fontSize: 25, fontWeight: FontWeight.w900),
