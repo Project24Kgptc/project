@@ -227,7 +227,7 @@ class LoginPage extends StatelessWidget {
 
 				/***********************************************************************************************/
 				final teacherData = await FirebaseFirestore.instance
-				.collection('teacher').doc(userCredential.user!.email!)
+				.collection('teachers').doc(userCredential.user!.email!)
 				.get();
 				if (teacherData.exists) {
 					_loginFormKey.currentState!.reset();

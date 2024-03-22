@@ -235,6 +235,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
                       onPressed: () =>
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => AddStudyMaterials(
+                                subId: subjectModel.subjectId,
                                     semester: subjectModel.semester,
                                     subject: subjectModel.subjectName,
                                   ))),
@@ -253,6 +254,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
                       onPressed: () =>
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => AddStudyMaterials(
+                                 subId: subjectModel.subjectId,
                                     semester: subjectModel.semester,
                                     subject: subjectModel.subjectName,
                                   ))),
@@ -272,6 +274,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
                       onPressed: () =>
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => AddStudyMaterials(
+                                 subId: subjectModel.subjectId,
                                     semester: subjectModel.semester,
                                     subject: subjectModel.subjectName,
                                   ))),
