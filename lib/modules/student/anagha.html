@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            body {
+                margin: 0
+            }
+            .body {
+                position: relative;
+                background-color: aqua;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            .middle {
+                background-color: blue;
+                display: flex;
+            }
+            .middle button {
+                padding: 10px 15px;
+                border-radius: 10px;
+                margin: 20px;
+                border: none;
+            }
+
+            .middle div {
+                background-color: yellow;
+                padding: 10px 15px;
+                border-radius: 10px;
+                margin: 20px 0;
+            }
+            .reset-button {
+                width: 40px;
+                height: 40px;
+                padding: 10px;
+                bottom: 10px;
+                right: 10px;
+                z-index: 99;
+                position: absolute;
+                border-radius: 50%;
+                background-color: tomato;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="body">
+            <div class="reset-button">Reset</div>
+            <div class="middle">
+                <button>+</button>
+                <div>4</div>
+                <button>-</button>
+            </div>
+        </div>
+    </body>
+</html>

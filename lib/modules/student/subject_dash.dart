@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:student_analytics/data_models/assignment_model.dart';
 import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/data_models/seriestest_model.dart';
@@ -211,7 +213,7 @@ class SubjectDashboard extends StatelessWidget {
                 height: 2,
               ),
               FutureBuilder(
-                future: getStudyMaterials(context),
+                future: listData(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const ExpansionTile(
@@ -246,7 +248,7 @@ class SubjectDashboard extends StatelessWidget {
                           ),
                           trailing: IconButton(
                               onPressed: () async {
-                                await downloadFile(model.downloadUrl, context);
+                                await downloadFile( context,model.name);
                               },
                               icon: Icon(Icons.download)),
                         );
@@ -262,32 +264,25 @@ class SubjectDashboard extends StatelessWidget {
     );
   }
 
-  Future<void> downloadFile(String downloadUrl, context) async {
-    try {
-      final response = await http.get(Uri.parse(downloadUrl));
-      if (response.statusCode == 200) {
-        final appDir = await getExternalStorageDirectory();
-        final filePath =
-            '${appDir!.path}/downloaded_file.pdf'; // Change the file extension based on your file type
+  Future<void> downloadFile(BuildContext ctx,String s) async 
+    {
+		if(await Permission.storage.isDenied) {
+			await Permission.storage.request();
+		}
+		if(await Permission.storage.isDenied) {
+			// showMessage(ctx, "   Permission Denied", const Icon(Icons.cancel, color: Color(0xFFFF0000),));
+			return;
+		}
+		const dir = "/storage/emulated/0/Cloud Files";
+		await Directory(dir).create();
+		File file = File("/storage/emulated/0/Cloud Files/$s");
 
-        final file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
-
-        // File downloaded successfully
-        print('File downloaded to: $filePath');
-        showSnackBar(
-            context: context,
-            message: 'File downloaded to: $filePath',
-            icon: Icon(Icons.download_done_rounded));
-      } else {
-        // Handle HTTP error
-        print('HTTP error: ${response.statusCode}');
-      }
-    } catch (e) {
-      // Handle other errors
-      print('Error downloading file: $e');
+        final ref = FirebaseStorage.instance.ref().child("/$s");
+		final task = ref.writeToFile(file);
+		task.whenComplete(() {
+			showSnackBar(context: ctx, message: "   Download Completed", icon: const Icon(Icons.download));
+		});
     }
-  }
 
   Future<List<AssignmentModel>?> getAssignments(BuildContext context) async {
     try {
@@ -355,31 +350,46 @@ class SubjectDashboard extends StatelessWidget {
     return presentCount;
   }
 
-  Future<List<StudyMaterialModel>?> getStudyMaterials(
-      BuildContext context) async {
-    try {
-      final data = await FirebaseFirestore.instance
-          .collection('study_materials')
-          .where('subject', isEqualTo: subject.subjectName)
-          .get();
-      if (data.docs.isNotEmpty) {
-        final List<StudyMaterialModel> studyMaterialList = data.docs
-            .map((e) => (StudyMaterialModel.fromMaptoObject(e.data())))
-            .toList();
-        return studyMaterialList;
-      } else {
-        return null;
-      }
-    } catch (err) {
-      sss(err);
-      showSnackBar(
-          context: context,
-          message: '  Error occured !',
-          icon: const Icon(
-            Icons.error,
-            color: Colors.red,
-          ));
-      return null;
-    }
-  }
+
+  Future<List> listData() async
+	{
+		List l = [];
+		l.clear();
+
+		final cc = await FirebaseStorage.instance.ref().child('folder/').list();
+
+		for (var e in cc.items) {
+			l.add(e.name);
+		}
+		return l;
+	}
+
+   
+//   Future<List<StudyMaterialModel>?> getStudyMaterials(
+//       BuildContext context) async {
+//     try {
+//       final data = await FirebaseFirestore.instance
+//           .collection('study_materials')
+//           .where('subject', isEqualTo: subject.subjectName)
+//           .get();
+//       if (data.docs.isNotEmpty) {
+//         final List<StudyMaterialModel> studyMaterialList = data.docs
+//             .map((e) => (StudyMaterialModel.fromMaptoObject(e.data())))
+//             .toList();
+//         return studyMaterialList;
+//       } else {
+//         return null;
+//       }
+//     } catch (err) {
+//       sss(err);
+//       showSnackBar(
+//           context: context,
+//           message: '  Error occured !',
+//           icon: const Icon(
+//             Icons.error,
+//             color: Colors.red,
+//           ));
+//       return null;
+//     }
+//   }
 }

@@ -29,7 +29,6 @@ class StudentDashboard extends StatelessWidget {
   final List<SubjectModel> subjects;
   final List<AttendanceModel> attentencelist;
   final String? profileurl;
-  String downloadURL = '';
 
   final double percentage;
 
@@ -49,7 +48,7 @@ class StudentDashboard extends StatelessWidget {
 
         await storageRef.putFile(File(pickedFile.path));
 
-        downloadURL = await storageRef.getDownloadURL();
+        String downloadURL = await storageRef.getDownloadURL();
         DocumentReference documentReference = FirebaseFirestore.instance
             .collection('students')
             .doc(studentData.email);

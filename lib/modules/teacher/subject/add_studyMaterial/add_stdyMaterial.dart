@@ -2,15 +2,16 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:student_analytics/data_models/study_materials.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
 
 class AddStudyMaterials extends StatefulWidget {
   const AddStudyMaterials(
-      {Key? key, required this.subject, required this.semester})
+      {Key? key, required this.subject, required this.semester,required this.subId})
       : super(key: key);
+      final subId;
   final subject;
   final semester;
   @override
@@ -18,21 +19,20 @@ class AddStudyMaterials extends StatefulWidget {
 }
 
 class _AddStudyMaterialsState extends State<AddStudyMaterials> {
-  File? _selectedFile;
-  final picker = ImagePicker();
+  PlatformFile? _selectedFile;
   TextEditingController titleController = TextEditingController();
 
   Future<void> _pickFile() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (pickedFile != null) {
+    if (result != null) {
       setState(() {
-        _selectedFile = File(pickedFile.path);
+        _selectedFile = result.files[0];
       });
     }
   }
 
-  Future<void> _uploadFile() async {
+  Future<void> _uploadFile(subId) async {
     if (_selectedFile == null) {
       // No file selected
       return;
@@ -40,12 +40,14 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
 
     try {
       final storage = FirebaseStorage.instance;
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final storageRef = storage.ref().child('study_materials/$fileName');
+      final fileName = _selectedFile!.name;
+      final storageRef = storage.ref().child('$subId/$fileName');
+
+      final File filee = File(_selectedFile!.path!);
 
       print('Storage Reference Path: ${storageRef.fullPath}');
       // Upload file to Firebase Storage
-      final uploadTask = await storageRef.putFile(_selectedFile!);
+      final uploadTask = await storageRef.putFile(filee);
 
       // Get download URL
       final downloadUrl = await uploadTask.ref.getDownloadURL();
@@ -63,7 +65,7 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
       showSnackBar(
           context: context,
           message: 'File uploaded successfully',
-          icon: Icon(Icons.check));
+          icon: const Icon(Icons.check));
       titleController.clear();
       setState(() {
         _selectedFile = null;
@@ -72,7 +74,7 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
       // Handle upload error
       print('Error uploading file: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading file')),
+        const SnackBar(content: Text('Error uploading file')),
       );
     }
   }
@@ -81,7 +83,7 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Study Materials'),
+        title: const Text('Add Study Materials'),
       ),
       body: Center(
         child: Padding(
@@ -91,11 +93,11 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
             children: [
               TextFormField(
                 controller: titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'enter Document Title',
                     border: OutlineInputBorder()),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
@@ -108,7 +110,7 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 5,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -119,8 +121,8 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
                     borderRadius: BorderRadius.circular(
                         15.0), // Use the same value as in the BoxDecoration
                     child: Container(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
+                      padding: const EdgeInsets.all(16.0),
+                      child: const Text(
                         'Choose File',
                         style: TextStyle(
                           fontSize: 16.0,
@@ -131,23 +133,21 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               if (_selectedFile != null)
                 Container(
                   child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.file_present_rounded,
                         color: Colors.blue,
                         size: 60,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      Text('Selected File: ${_selectedFile!.path}'.substring(
-                          _selectedFile!.path.length - 10,
-                          _selectedFile!.path.length)),
-                      SizedBox(height: 20),
+                      Text('Selected File: ${_selectedFile!.name}'),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -157,17 +157,17 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
                     foregroundColor: Colors.white),
                 onPressed: () async {
                   if (titleController.text.isNotEmpty &&
-                      _selectedFile!.path.isNotEmpty) {
+                      _selectedFile != null) {
                     // perform action
-                    await _uploadFile();
+                    await _uploadFile(widget.subId);
                   } else {
                     showSnackBar(
                         context: context,
                         message: 'invalid',
-                        icon: Icon(Icons.warning_rounded));
+                        icon: const Icon(Icons.warning_rounded));
                   }
                 },
-                child: Text('Upload File'),
+                child: const Text('Upload File'),
               ),
             ],
           ),
