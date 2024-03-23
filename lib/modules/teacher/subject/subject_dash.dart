@@ -30,7 +30,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
         title: Text(subjectModel.subjectName),
       ),
       body: SafeArea(
-        child: Column(
+        child: ListView(
           children: [
             FutureBuilder(
               future: getAssignments(context),

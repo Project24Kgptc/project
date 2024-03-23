@@ -233,6 +233,16 @@ class LoginPage extends StatelessWidget {
 					_loginFormKey.currentState!.reset();
 					final TeacherModel teacherModel = TeacherModel.fromMaptoObject(teacherData.data()!);
 					Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => TeacherDashboard(teacherData: teacherModel,)));
+          final subjects = await FirebaseFirestore.instance
+              .collection('subjects')
+              .where('teacherId', isEqualTo: teacherModel.teacherId)
+              .get();
+          await Future.delayed(const Duration(microseconds: 100));
+          final List<SubjectModel> subjectObjectsList = subjects.docs
+              .map((subject) => SubjectModel.fromMaptoObject(subject.data()))
+              .toList();
+          Provider.of<SubjectProvider>(context, listen: false)
+              .setAllSubjectsData(subjectObjectsList);
 					return;
 				}
 				/***********************************************************************************************/
@@ -249,21 +259,6 @@ class LoginPage extends StatelessWidget {
 					return;
 				}
 				/***********************************************************************************************/
-
-				// final studentData = await FirebaseFirestore.instance
-				// 	.collection('students')
-				// 	.doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
-				// 	.get();
-				// List<SubjectModel>? subjects =
-				// 	await getSubjectsByStudentId(studentData['regNo']);
-				// List<AttendanceModel> attentence = await getAllAttendance();
-				// Navigator.of(context).pushReplacement(MaterialPageRoute(
-				// 	builder: (ctx) => StudentDashboard(
-				// 	attentencelist: attentence,
-				// 		subjects: subjects!,
-				// 		studentData:
-				// 			StudentModel.fromMaptoObject(studentData.data()!))));
-				// _loginFormKey.currentState!.reset();
 			} on FirebaseAuthException catch (e) {
 				if (e.code == 'invalid-credential') {
 				_loginErrorMessageNotifier.value =
@@ -282,65 +277,65 @@ class LoginPage extends StatelessWidget {
 		}
 	}
 
-  	Future<void> teacherLoginFunctionality(BuildContext context) async {
-    if (_passwordController.text.trim().length > 5) {
-      _loginButtonLoadingNotifier.value = true;
-      FirebaseAuth auth = FirebaseAuth.instance;
-      try {
-        final UserCredential userCredential =
-            await auth.signInWithEmailAndPassword(
-                email: _emailController.text.trim(),
-                password: _passwordController.text.trim());
+  // 	Future<void> teacherLoginFunctionality(BuildContext context) async {
+  //   if (_passwordController.text.trim().length > 5) {
+  //     _loginButtonLoadingNotifier.value = true;
+  //     FirebaseAuth auth = FirebaseAuth.instance;
+  //     try {
+  //       final UserCredential userCredential =
+  //           await auth.signInWithEmailAndPassword(
+  //               email: _emailController.text.trim(),
+  //               password: _passwordController.text.trim());
 
-        final teacherData = await FirebaseFirestore.instance
-            .collection('teachers')
-            .doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
-            .get();
-        if (teacherData.exists) {
-          _loginFormKey.currentState!.reset();
-          final TeacherModel teacherModel =
-              TeacherModel.fromMaptoObject(teacherData.data()!);
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (ctx) => TeacherDashboard(teacherData: teacherModel)));
+  //       final teacherData = await FirebaseFirestore.instance
+  //           .collection('teachers')
+  //           .doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
+  //           .get();
+  //       if (teacherData.exists) {
+  //         _loginFormKey.currentState!.reset();
+  //         final TeacherModel teacherModel =
+  //             TeacherModel.fromMaptoObject(teacherData.data()!);
+  //         Navigator.of(context).pushReplacement(MaterialPageRoute(
+  //             builder: (ctx) => TeacherDashboard(teacherData: teacherModel)));
 
-          final subjects = await FirebaseFirestore.instance
-              .collection('subjects')
-              .where('teacherId', isEqualTo: teacherModel.teacherId)
-              .get();
-          await Future.delayed(const Duration(microseconds: 100));
-          final List<SubjectModel> subjectObjectsList = subjects.docs
-              .map((subject) => SubjectModel.fromMaptoObject(subject.data()))
-              .toList();
-          Provider.of<SubjectProvider>(context, listen: false)
-              .setAllSubjectsData(subjectObjectsList);
-        }
+  //         final subjects = await FirebaseFirestore.instance
+  //             .collection('subjects')
+  //             .where('teacherId', isEqualTo: teacherModel.teacherId)
+  //             .get();
+  //         await Future.delayed(const Duration(microseconds: 100));
+  //         final List<SubjectModel> subjectObjectsList = subjects.docs
+  //             .map((subject) => SubjectModel.fromMaptoObject(subject.data()))
+  //             .toList();
+  //         Provider.of<SubjectProvider>(context, listen: false)
+  //             .setAllSubjectsData(subjectObjectsList);
+  //       }
 
-        final adminData = await FirebaseFirestore.instance
-            .collection('admins')
-            .doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
-            .get();
-        if (adminData.exists) {
-          _loginFormKey.currentState!.reset();
-          final AdminModel adminModel =
-              AdminModel.fromMaptoObject(adminData.data()!);
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (ctx) => AdminDashboard(adminModel: adminModel)));
-        }
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'invalid-credential') {
-          _loginErrorMessageNotifier.value = '  Incorrect Email or Password !';
-        }
-      } catch (err) {
-        sss(err);
-        _loginErrorMessageNotifier.value = '  Something went wrong !';
-      } finally {
-        _loginButtonLoadingNotifier.value = false;
-      }
-    } else {
-      await Future.delayed(const Duration(seconds: 1));
-      _loginErrorMessageNotifier.value = '  Incorrect Email or Password !';
-    }
-  }
+  //       final adminData = await FirebaseFirestore.instance
+  //           .collection('admins')
+  //           .doc(userCredential.user!.email!.replaceAll('@mail.com', ''))
+  //           .get();
+  //       if (adminData.exists) {
+  //         _loginFormKey.currentState!.reset();
+  //         final AdminModel adminModel =
+  //             AdminModel.fromMaptoObject(adminData.data()!);
+  //         Navigator.of(context).pushReplacement(MaterialPageRoute(
+  //             builder: (ctx) => AdminDashboard(adminModel: adminModel)));
+  //       }
+  //     } on FirebaseAuthException catch (e) {
+  //       if (e.code == 'invalid-credential') {
+  //         _loginErrorMessageNotifier.value = '  Incorrect Email or Password !';
+  //       }
+  //     } catch (err) {
+  //       sss(err);
+  //       _loginErrorMessageNotifier.value = '  Something went wrong !';
+  //     } finally {
+  //       _loginButtonLoadingNotifier.value = false;
+  //     }
+  //   } else {
+  //     await Future.delayed(const Duration(seconds: 1));
+  //     _loginErrorMessageNotifier.value = '  Incorrect Email or Password !';
+  //   }
+  // }
 
   	Future<List<SubjectModel>> getSubjects(StudentModel studentModel) async {
 		try {

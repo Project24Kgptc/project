@@ -12,7 +12,7 @@ class StudentValidator {
 		if(input!.trim() == '') {
 			return 'Register number is required';
 		}
-		else if(input.trim().length != 4 || !numberCheckRegex.hasMatch(input)) {
+		else if(input.trim().length != 10 || !numberCheckRegex.hasMatch(input)) {
 			return 'Invalid Register number';
 		}
 		return null;

@@ -228,6 +228,5 @@ class AddStudent extends StatelessWidget {
 			email: email,
 			password: '111111'
 		);
-		await FirebaseAuth.instance.signOut();
 	}
 }

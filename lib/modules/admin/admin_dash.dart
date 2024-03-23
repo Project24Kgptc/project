@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:student_analytics/data_models/admin_model.dart';
 import 'package:student_analytics/data_models/subject_model.dart';
 import 'package:student_analytics/modules/admin/students/students.dart';
-import 'package:student_analytics/modules/admin/subject/View_subjectRooms.dart';
+import 'package:student_analytics/modules/admin/subject/view_subjects.dart';
 import 'package:student_analytics/modules/admin/teachers/teachers.dart';
 import 'package:student_analytics/auth/login_page.dart';
 import 'package:student_analytics/data_models/student_model.dart';

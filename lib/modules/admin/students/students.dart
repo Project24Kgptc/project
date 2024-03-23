@@ -96,8 +96,12 @@ class AdminAllStudentsPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10)),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 0),
-                      leading: const CircleAvatar(
+                      leading: model.students[index].profile == '' ? const CircleAvatar(
+                        backgroundColor: Colors.white,
                         child: Icon(Icons.person),
+                      ) : CircleAvatar(
+                        backgroundColor: Colors.white,
+                        backgroundImage: NetworkImage(model.students[index].profile),
                       ),
                       title: Text(
                         model.filteredStudents[index].name,
@@ -143,19 +147,20 @@ class AdminAllStudentsPage extends StatelessWidget {
                             .deleteStudent(student.regNo, context);
                         navigateToStudentsPage(context);
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                         size: 30,
                       )),
                 ),
-                const CircleAvatar(
+                student.profile == '' ? const CircleAvatar(
                   radius: 80,
                   backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.person,
-                    size: 80,
-                  ),
+                  child: Icon(Icons.person),
+                ) : CircleAvatar(
+                  radius: 80,
+                  backgroundColor: Colors.white,
+                  backgroundImage: NetworkImage(student.profile),
                 ),
                 const SizedBox(
                   height: 20,
