@@ -22,7 +22,7 @@ class AddAttendanceScreen extends StatefulWidget {
 class _AddAttendanceScreenState extends State<AddAttendanceScreen> {
   List<String> checkedRoll = [];
   List<StudentModel> studentList = [];
-  List<bool> checkedStudents = List.generate(5, (index) => false);
+  List<bool> checkedStudents = [];
   String selectedHour = 'Select Hour';
   List<String> hourList = [
     'Select Hour',
@@ -47,16 +47,15 @@ class _AddAttendanceScreenState extends State<AddAttendanceScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchStudents();
   }
 
   void fetchStudents() async {
-    var provider = Provider.of<AttendanceProvider>(context, listen: false);
+    final AttendanceProvider provider = Provider.of<AttendanceProvider>(context, listen: false);
     studentList = await provider.getStudentsbyBatch(widget.batch);
+    checkedStudents = List.generate(studentList.length, (index) => false);
     setState(() {});
-    print(studentList.length);
   }
 
   @override
@@ -97,18 +96,16 @@ class _AddAttendanceScreenState extends State<AddAttendanceScreen> {
                 child: ListView.builder(
                   itemCount: studentList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      child: ListTile(
-                        title: Text(studentList[index].name),
-                        subtitle: Text(studentList[index].rollNo),
-                        trailing: Checkbox(
-                          value: checkedStudents[index],
-                          onChanged: (bool? value) {
-                            setState(() {
-                              checkedStudents[index] = value ?? false;
-                            });
-                          },
-                        ),
+                    return ListTile(
+                      title: Text(studentList[index].name),
+                      subtitle: Text(studentList[index].rollNo),
+                      trailing: Checkbox(
+                        value: checkedStudents[index],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            checkedStudents[index] = value ?? false;
+                          });
+                        },
                       ),
                     );
                   },

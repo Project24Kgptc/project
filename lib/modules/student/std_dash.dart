@@ -55,7 +55,7 @@ class StudentDashboard extends StatelessWidget {
 
         await documentReference.update({'profile': downloadURL});
         showSnackBar(
-            context: context, message: 'Profile Updated', icon: SizedBox());
+            context: context, message: 'Profile Updated', icon: const Icon(Icons.done));
       } else {
         print('No image selected.');
       }
@@ -66,13 +66,6 @@ class StudentDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ImageProvider foregroundImage;
-
-    // if (_imageNotifier.value == null) {
-    //   foregroundImage = NetworkImage('url');
-    // } else {
-    //   foregroundImage = FileImage(_imageNotifier.value!);
-    // }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -131,10 +124,8 @@ class StudentDashboard extends StatelessWidget {
                     valueListenable: _imageNotifier,
                     builder: (context, image, _) {
                       return CircleAvatar(
-                        // foregroundImage: foregroundImage,
                         radius: 25,
                         backgroundColor: Colors.deepPurpleAccent,
-                        // foregroundImage: NetworkImage(''),
                         backgroundImage: image != null
                             ? FileImage(image) as ImageProvider<Object>?
                             : NetworkImage(studentData.profile),

@@ -1,0 +1,13 @@
+1. Student Dashboard - error on profile image when image is not set
+
+2. Teacher Dashboard .. 'assignment, series test, attendance' not being added to list after adding.. 
+
+3. Teacher Dashboard - need attendance display option
+
+4. Assignment marks not showing in assignment mark adding page after going back and coming in
+
+5. Study material document - store subject id instead of subject name
+
+6. Attendance hour - number of hours instead of Hour selection
+
+7. Attendance expanded details showing table improper

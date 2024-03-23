@@ -80,7 +80,6 @@ class TeacherDashboard extends StatelessWidget {
 							' Subjects',
 							style: TextStyle(
 								fontSize: 20,
-								
 							),
 						),
 						Expanded(
