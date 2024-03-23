@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/data_models/student_model.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
@@ -50,10 +51,11 @@ class StudentsProvider extends ChangeNotifier {
 
       // Delete the document with the specified documentId
       await studentsCollection.doc(documentId).delete();
+
       showSnackBar(
           context: context,
           message: 'Student deleted',
-          icon: Icon(Icons.check_box));
+          icon: const Icon(Icons.check_box));
 
       notifyListeners();
 

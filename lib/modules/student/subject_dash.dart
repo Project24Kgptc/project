@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:student_analytics/data_models/assignment_model.dart';
 import 'package:student_analytics/data_models/attendance_model.dart';
 import 'package:student_analytics/data_models/seriestest_model.dart';
@@ -77,7 +78,7 @@ class SubjectDashboard extends StatelessWidget {
                     strokeWidth: 8,
                     color: Colors.deepPurpleAccent,
                     backgroundColor: Colors.grey,
-                    value: presentCount.toDouble(),
+                    value: percentage/100,
                   ),
                 ),
                 Column(
@@ -243,7 +244,7 @@ class SubjectDashboard extends StatelessWidget {
                           ),
                           trailing: IconButton(
                               onPressed: () async {
-                                await downloadFile(model.downloadUrl);
+                                await downloadFile(model.downloadUrl, context);
                               },
                               icon: const Icon(Icons.download)),
                         );
@@ -258,7 +259,7 @@ class SubjectDashboard extends StatelessWidget {
       );
   }
 
-  Future<void> downloadFile(String downloadUrl) async {
+  Future<void> downloadFile(String downloadUrl, BuildContext context) async {
     try {
       final response = await http.get(Uri.parse(downloadUrl));
       if (response.statusCode == 200) {
@@ -284,16 +285,26 @@ class SubjectDashboard extends StatelessWidget {
         }
         // Determine file extension based on Content-Type
 
-        final appDir = await getExternalStorageDirectory();
+
+    if(await Permission.storage.isDenied) {
+			await Permission.manageExternalStorage.request();
+		}
+		if(await Permission.manageExternalStorage.isDenied) {
+			showSnackBar(context: context, message: "   Permission Denied", icon: const Icon(Icons.cancel, color: Color(0xFFFF0000),));
+			return;
+		}
+		String dir = "/storage/emulated/0/Study Materials/${subject.subjectName}";
+		await Directory(dir).create();
+
         String name =
             downloadUrl.substring(downloadUrl.length - 20, downloadUrl.length);
-        final filePath = '${appDir!.path}/$name$extension';
+		File file = File("/storage/emulated/0/Study Materials/${subject.subjectName}/$name$extension");
 
-        final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
 
         // File downloaded successfully
-        print('File downloaded to: $filePath');
+        print('File downloaded');
+			  showSnackBar(context: context, message: "  FIle downloaded", icon: const Icon(Icons.done, color: Colors.green,));
       } else {
         // Handle HTTP error
         print('HTTP error: ${response.statusCode}');
