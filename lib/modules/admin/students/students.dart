@@ -97,8 +97,8 @@ class AdminAllStudentsPage extends StatelessWidget {
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 0),
                       leading: model.students[index].profile == '' ? const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(Icons.person),
+                        backgroundColor: Colors.deepPurpleAccent,
+                        child: Icon(Icons.person, color: Colors.white,),
                       ) : CircleAvatar(
                         backgroundColor: Colors.white,
                         backgroundImage: NetworkImage(model.students[index].profile),

@@ -1,5 +1,3 @@
-1. Student Dashboard - error on profile image when image is not set
-
 2. Teacher Dashboard .. 'assignment, series test, attendance' not being added to list after adding.. 
 
 3. Teacher Dashboard - need attendance display option
@@ -10,4 +8,4 @@
 
 6. Attendance hour - number of hours instead of Hour selection
 
-7. Attendance expanded details showing table improper
+7. Attendance expanded details showing table

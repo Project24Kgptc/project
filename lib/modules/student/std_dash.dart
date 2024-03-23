@@ -32,7 +32,7 @@ class StudentDashboard extends StatelessWidget {
 
   final double percentage;
 
-  final ValueNotifier<File?> _imageNotifier = ValueNotifier(null);
+  final ValueNotifier<String> _imageNotifier = ValueNotifier('');
 
   Future<void> pickImageFromGallery(context) async {
     try {
@@ -40,7 +40,7 @@ class StudentDashboard extends StatelessWidget {
           await ImagePicker().pickImage(source: ImageSource.gallery);
 
       if (pickedFile != null) {
-        _imageNotifier.value = File(pickedFile.path);
+       
 
         final storage = FirebaseStorage.instance;
         final fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -54,6 +54,7 @@ class StudentDashboard extends StatelessWidget {
             .doc(studentData.email);
 
         await documentReference.update({'profile': downloadURL});
+        _imageNotifier.value = downloadURL;
         showSnackBar(
             context: context, message: 'Profile Updated', icon: const Icon(Icons.done));
       } else {
@@ -66,6 +67,7 @@ class StudentDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _imageNotifier.value=studentData.profile;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -120,16 +122,24 @@ class StudentDashboard extends StatelessWidget {
                   onTap: () async {
                     await pickImageFromGallery(context);
                   },
-                  child: ValueListenableBuilder<File?>(
+                  child: ValueListenableBuilder<String>(
                     valueListenable: _imageNotifier,
                     builder: (context, image, _) {
-                      return CircleAvatar(
+                    if(image == '') {
+                      return const CircleAvatar(
                         radius: 25,
                         backgroundColor: Colors.deepPurpleAccent,
-                        backgroundImage: image != null
-                            ? FileImage(image) as ImageProvider<Object>?
-                            : NetworkImage(studentData.profile),
+                        child: Icon(Icons.person, color: Colors.white,),
                       );
+                    }
+                    else {
+                      return CircleAvatar(
+                        radius: 25,
+                        backgroundImage: 
+                        NetworkImage(image),
+                      );
+                    }
+                      
                     },
                   ),
                 ),
