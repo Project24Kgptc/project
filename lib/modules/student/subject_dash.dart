@@ -237,7 +237,7 @@ class SubjectDashboard extends StatelessWidget {
                       children: snapshot.data!.map((model) {
                         return ListTile(
                           title: Text(model.name),
-                          leading: Icon(
+                          leading: const Icon(
                             Icons.file_present,
                             color: Colors.red,
                           ),
@@ -245,7 +245,7 @@ class SubjectDashboard extends StatelessWidget {
                               onPressed: () async {
                                 await downloadFile(model.downloadUrl);
                               },
-                              icon: Icon(Icons.download)),
+                              icon: const Icon(Icons.download)),
                         );
                       }).toList(),
                     );

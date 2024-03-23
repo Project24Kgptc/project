@@ -67,7 +67,7 @@ class StudentDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _imageNotifier.value=studentData.profile;
+    _imageNotifier.value = studentData.profile;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -153,27 +153,6 @@ class StudentDashboard extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w600),
                 ),
-                trailing: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Rank',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                    ),
-                    CircleAvatar(
-                      radius: 13,
-                      backgroundColor: Colors.black,
-                      child: Text(
-                        '65',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    )
-                  ],
-                ),
               ),
             ),
             const SizedBox(
@@ -193,8 +172,8 @@ class StudentDashboard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  percentage.toString().length > 2
-                      ? '${percentage.toString().substring(0, 3)}%'
+                  percentage.toString().length > 3
+                      ? '${percentage.toString().substring(0,3)}%'
                       : '$percentage%',
                   style: const TextStyle(
                       fontSize: 25, fontWeight: FontWeight.w900),
