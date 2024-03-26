@@ -46,31 +46,31 @@ class CustomTextField extends StatelessWidget {
 				prefixIcon: Icon(prefixIcon),
 				suffixIcon: suffixIcon,
 				prefixIconColor: MaterialStateColor.resolveWith((states) {
-					return states.contains(MaterialState.focused) ? Colors.deepPurpleAccent : Colors.black;
+					return states.contains(MaterialState.focused) ? const Color(0xFFA95DE7) : Colors.black;
 				}),
 				labelText: labelText,
 				hintText: hintText,
 				floatingLabelAlignment: FloatingLabelAlignment.start,
 				floatingLabelStyle: const TextStyle(
-					color: Colors.deepPurpleAccent
+					color: Color(0xFFA95DE7)
 				),
 				border: OutlineInputBorder(
 					borderSide: const BorderSide(
 						color: Colors.black,
 					),
-					borderRadius: BorderRadius.circular(30)
+					borderRadius: BorderRadius.circular(10)
 				),
 				enabledBorder: OutlineInputBorder(
 					borderSide: const BorderSide(
 						color: Colors.black,
 					),
-					borderRadius: BorderRadius.circular(30)
+					borderRadius: BorderRadius.circular(10)
 				),
 				focusedBorder: OutlineInputBorder(
 					borderSide: const BorderSide(
-						color: Colors.deepPurpleAccent,
+						color: Color(0xFFA95DE7),
 					),
-					borderRadius: BorderRadius.circular(30)
+					borderRadius: BorderRadius.circular(10)
 				),
 			),
 		);

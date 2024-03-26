@@ -26,11 +26,11 @@ class AuthScreen extends StatelessWidget {
 	Widget build(BuildContext context) {
 		checkAuth(context);
 		return const Scaffold(
-			backgroundColor: Colors.deepPurpleAccent,
+			backgroundColor: Color(0xFFA95DE7),
 			body: SafeArea(
 				child: Center(
 					child: CircularProgressIndicator(
-						color: Colors.white,
+            color: Colors.white,
 					),
 				)
 			),

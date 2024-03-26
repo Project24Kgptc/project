@@ -32,170 +32,180 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurpleAccent,
       body: SafeArea(
-        child: Center(
-            child: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.all(30),
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+        child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background_images/bg.jpeg'),
+              fit: BoxFit.cover
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-				const SizedBox(height: 20,),
-                Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Form(
-                      key: _loginFormKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            "Login",
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
+            
+          ),
+            child: Center(
+              child: SingleChildScrollView(
+                        child: Container(
+              margin: const EdgeInsets.all(30),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                      const SizedBox(height: 20,),
+                  Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Form(
+                        key: _loginFormKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          ValueListenableBuilder(
-                            valueListenable: _loginErrorMessageNotifier,
-                            builder: (context, value, child) {
-                              return Visibility(
-                                visible: value != '',
-                                child: Text(
-                                  value,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            labelText: 'Email',
-                            prefixIcon: Icons.email,
-                            onChange: (_) =>
-                                _loginErrorMessageNotifier.value = '',
-                            validator: (input) {
-                               final RegExp emailRegExp = RegExp(
-                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-                                if (input!.trim() == '') {
-                                  return "Please enter your email";
-                                } else if (!emailRegExp
-                                    .hasMatch(input.trim())) {
-                                  return 'Please provide a valid email !';
-                                }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable: _passwordVisibleNotifier,
-                            builder: (context, value, child) {
-                              return CustomTextField(
-                                  controller: _passwordController,
-                                  obscureText: !value,
-                                  labelText: "Password",
-                                  prefixIcon: Icons.lock,
-                                  suffixIcon: IconButton(
-                                    onPressed: () =>
-                                        _passwordVisibleNotifier.value =
-                                            !_passwordVisibleNotifier.value,
-                                    icon: Icon(
-                                      value
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: Colors.black,
-                                      size: 20,
-                                    ),
+                            const SizedBox(height: 6),
+                            ValueListenableBuilder(
+                              valueListenable: _loginErrorMessageNotifier,
+                              builder: (context, value, child) {
+                                return Visibility(
+                                  visible: value != '',
+                                  child: Text(
+                                    value,
+                                    style: const TextStyle(color: Colors.red),
                                   ),
-                                  onChange: (_) =>
-                                      _loginErrorMessageNotifier.value = '',
-                                  validator: (value) {
-                                    if (value!.trim() == '') {
-                                      return 'Please enter your password';
-                                    } else {
-                                      return null;
-                                    }
-                                  });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-						  Align(
-							alignment: Alignment.bottomRight,
-							child: TextButton(
-							onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword(),)), 
-							child: const Text(
-								'forget password', 
-								textAlign: TextAlign.right, 
-								style: TextStyle(
-									color: Colors.black
-								),
-							)
-						  ),
-						  ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            height: 45,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(70)),
-                            width: double.infinity,
-                            child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepPurpleAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    )),
-                                onPressed: () {
-                                  if (_loginFormKey.currentState!.validate()) {
-                                    login(context);
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                            CustomTextField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              labelText: 'Email',
+                              prefixIcon: Icons.email,
+                              onChange: (_) =>
+                                  _loginErrorMessageNotifier.value = '',
+                              validator: (input) {
+                                 final RegExp emailRegExp = RegExp(
+                                      r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+                                  if (input!.trim() == '') {
+                                    return "Please enter your email";
+                                  } else if (!emailRegExp
+                                      .hasMatch(input.trim())) {
+                                    return 'Please provide a valid email !';
                                   }
-                                },
-                                child: ValueListenableBuilder(
-                                  valueListenable: _loginButtonLoadingNotifier,
-                                  builder: (context, value, child) {
-                                    if (value) {
-                                      return const SizedBox(
-                                        height: 22,
-                                        width: 22,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 3,
-                                        ),
-                                      );
-                                    } else {
-                                      return const Text('Login',
-                                          style: TextStyle(
-                                              fontSize: 19,
-                                              fontWeight: FontWeight.w900
-											)
-										);
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            ValueListenableBuilder(
+                              valueListenable: _passwordVisibleNotifier,
+                              builder: (context, value, child) {
+                                return CustomTextField(
+                                    controller: _passwordController,
+                                    obscureText: !value,
+                                    labelText: "Password",
+                                    prefixIcon: Icons.lock,
+                                    suffixIcon: IconButton(
+                                      onPressed: () =>
+                                          _passwordVisibleNotifier.value =
+                                              !_passwordVisibleNotifier.value,
+                                      icon: Icon(
+                                        value
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.black,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    onChange: (_) =>
+                                        _loginErrorMessageNotifier.value = '',
+                                    validator: (value) {
+                                      if (value!.trim() == '') {
+                                        return 'Please enter your password';
+                                      } else {
+                                        return null;
+                                      }
+                                    });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Align(
+                            alignment: Alignment.bottomRight,
+                            child: TextButton(
+                            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword(),)), 
+                            child: const Text(
+                              'forget password', 
+                              style: TextStyle(
+                                color: Colors.black
+                              ),
+                            )
+                            ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 45,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(70)),
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFA95DE7),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      )),
+                                  onPressed: () {
+                                    if (_loginFormKey.currentState!.validate()) {
+                                      login(context);
                                     }
                                   },
-                                )),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          )
-                        ],
+                                  child: ValueListenableBuilder(
+                                    valueListenable: _loginButtonLoadingNotifier,
+                                    builder: (context, value, child) {
+                                      if (value) {
+                                        return const SizedBox(
+                                          height: 22,
+                                          width: 22,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 3,
+                                          ),
+                                        );
+                                      } else {
+                                        return const Text('Login',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.w900
+                                    )
+                                  );
+                                      }
+                                    },
+                                  )),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            )
+                          ],
+                        ),
+                      ))
+                ],
+              ),
+                        ),
                       ),
-                    ))
-              ],
-            ),
-          ),
-        )),
+            )),
       ),
     );
   }
