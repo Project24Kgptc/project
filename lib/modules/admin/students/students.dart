@@ -144,7 +144,7 @@ class AdminAllStudentsPage extends StatelessWidget {
                   child: IconButton(
                       onPressed: () {
                         Provider.of<StudentsProvider>(context, listen: false)
-                            .deleteStudent(student.regNo, context);
+                            .deleteStudent(context, student.email);
                         navigateToStudentsPage(context);
                       },
                       icon: const Icon(

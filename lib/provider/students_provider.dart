@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:student_analytics/data_models/student_model.dart';
@@ -42,19 +44,38 @@ class StudentsProvider extends ChangeNotifier {
   }
 
   //delete student
-  Future<void> deleteStudent(String documentId,context) async {
+  Future<void> deleteStudent(BuildContext context, String email) async {
     try {
       // Reference to your Firestore collection
       CollectionReference studentsCollection =
           FirebaseFirestore.instance.collection('students');
 
       // Delete the document with the specified documentId
-      await studentsCollection.doc(documentId).delete();
+      final url = Uri.parse('https://adacamease-server.onrender.com/delete');
+      final headers = {'Content-Type': 'application/json'};
+      final body = jsonEncode({'email': email});
 
-      showSnackBar(
+      try {
+        final response = await http.post(url, headers: headers, body: body);
+        if (response.statusCode == 200) {
+          await studentsCollection.doc(email).delete();
+          showSnackBar(
           context: context,
           message: 'Student deleted',
           icon: const Icon(Icons.check_box));
+          _students.removeWhere((element) => element.email == email);
+        } else {
+          showSnackBar(
+          context: context,
+          message: 'Deletion failed',
+          icon: const Icon(Icons.error, color: Colors.red,));
+        }
+      } catch (error) {
+        showSnackBar(
+          context: context,
+          message: 'Error occured',
+          icon: const Icon(Icons.error, color: Colors.red,));
+      }
 
       notifyListeners();
 
