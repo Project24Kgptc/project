@@ -246,7 +246,9 @@ class SubjectDashboard extends StatelessWidget {
                           ),
                           trailing: IconButton(
                               onPressed: () async {
-                                await downloadFile(model.downloadUrl, context);
+                                await downloadFile(
+                                  model.downloadUrl,
+                                );
                               },
                               icon: Icon(Icons.download)),
                         );
@@ -262,23 +264,43 @@ class SubjectDashboard extends StatelessWidget {
     );
   }
 
-  Future<void> downloadFile(String downloadUrl, context) async {
+  Future<void> downloadFile(String downloadUrl) async {
     try {
       final response = await http.get(Uri.parse(downloadUrl));
       if (response.statusCode == 200) {
+        // Extract Content-Type header
+        print(response.body);
+
+        String extension = '';
+        if (downloadUrl.toLowerCase().contains('.pdf')) {
+          extension = '.pdf';
+        }else  if (downloadUrl.toLowerCase().contains('.jpg')) {
+          extension = '.jpg';
+        } if (downloadUrl.toLowerCase().contains('.png')) {
+          extension = '.png';
+        } if (downloadUrl.toLowerCase().contains('.gif')) {
+          extension = '.gif';
+        } if (downloadUrl.toLowerCase().contains('.jpeg')) {
+          extension = '.jpg';
+        }if (downloadUrl.toLowerCase().contains('.doc')) {
+          extension = '.doc';
+        }if (downloadUrl.toLowerCase().contains('.ppt')) {
+          extension = '.ppt';
+        }if (downloadUrl.toLowerCase().contains('.txt')) {
+          extension = '.txt';
+        }
+        // Determine file extension based on Content-Type
+
         final appDir = await getExternalStorageDirectory();
-        final filePath =
-            '${appDir!.path}/downloaded_file.pdf'; // Change the file extension based on your file type
+        String name =
+            downloadUrl.substring(downloadUrl.length - 20, downloadUrl.length);
+        final filePath = '${appDir!.path}/$name$extension';
 
         final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
 
         // File downloaded successfully
         print('File downloaded to: $filePath');
-        showSnackBar(
-            context: context,
-            message: 'File downloaded to: $filePath',
-            icon: Icon(Icons.download_done_rounded));
       } else {
         // Handle HTTP error
         print('HTTP error: ${response.statusCode}');

@@ -19,6 +19,7 @@ class TeacherDashboard extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
+    
 		return Scaffold(
 			floatingActionButton: ElevatedButton(
 				onPressed: () async {
@@ -40,6 +41,7 @@ class TeacherDashboard extends StatelessWidget {
 			appBar: AppBar(
 				title: const Text('Teacher Dashboard'),
 				actions: [
+          
 					IconButton(
 						onPressed: () async {
 							try {

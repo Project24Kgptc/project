@@ -84,14 +84,14 @@ class TeacherSubjectDashboard extends StatelessWidget {
                         trailing: Text(model.dueDate),
                         onTap: () async {
                           List<AddMarkModel>? markModel =
-                              await generateSeriestestModel();
+                              await generateAssignmrntModel();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AddAssignmentMark(
                                         assignmentdata: model,
                                         subjectModel: subjectModel,
-                                        seriesTestMarkModel:
+                                        assignmentMarkModel:
                                             markModel!.toList(),
                                       )));
                         },
@@ -347,7 +347,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
     }
   }
 
-  Future<List<AddMarkModel>?> generateSeriestestModel() async {
+  Future<List<AddMarkModel>?> generateAssignmrntModel() async {
     try {
       final QuerySnapshot<Map<String, dynamic>> students =
           await FirebaseFirestore.instance
@@ -383,7 +383,7 @@ class TeacherSubjectDashboard extends StatelessWidget {
 
   Future<void> gotoAddSeriesTestScreen(BuildContext context) async {
     final List<AddMarkModel>? seriesTestMarksModel =
-        await generateSeriestestModel();
+        await generateAssignmrntModel();
     if (seriesTestMarksModel != null && seriesTestMarksModel.isNotEmpty) {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (ctx) => AddSeriesTest(

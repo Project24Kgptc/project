@@ -14,17 +14,18 @@ class AddAssignmentMark extends StatelessWidget {
   AddAssignmentMark(
       {super.key,
       required this.subjectModel,
-      required this.seriesTestMarkModel,
+      required this.assignmentMarkModel,
       required this.assignmentdata});
 
   final SubjectModel subjectModel;
-  final List<AddMarkModel> seriesTestMarkModel;
+  final List<AddMarkModel> assignmentMarkModel;
   final AssignmentModel assignmentdata;
 
   final GlobalKey<FormState> _addAssignmentMarkFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> submissions = assignmentdata.submissions;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
@@ -79,6 +80,21 @@ class AddAssignmentMark extends StatelessWidget {
                         ]),
                     child: ListView.builder(
                       itemBuilder: (context, index) {
+                        print(submissions);
+                        for (Map item in submissions) {
+                          if (item['rollNo'] ==
+                              assignmentMarkModel[index].rollNo) {
+                            assignmentMarkModel[index].markController.text =
+                                item['mark'] ?? '0';
+                          }
+                        }
+
+                        // if (submissions[index]['rollNo'] ==
+                        //     assignmentMarkModel[index].rollNo) {
+                        //   assignmentMarkModel[index].markController.text =
+                        //       submissions[index]['mark'] ?? '0';
+                        // }
+
                         return Container(
                           margin:
                               const EdgeInsets.only(top: 5, left: 5, right: 5),
@@ -92,14 +108,14 @@ class AddAssignmentMark extends StatelessWidget {
                                     offset: Offset(-1, 1))
                               ]),
                           child: ListTile(
-                            onTap: () => seriesTestMarkModel[index]
+                            onTap: () => assignmentMarkModel[index]
                                 .focusNode
                                 .requestFocus(),
                             leading: CircleAvatar(
                               radius: 12,
                               backgroundColor: Colors.deepPurpleAccent,
                               child: Text(
-                                seriesTestMarkModel[index].rollNo,
+                                assignmentMarkModel[index].rollNo,
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 13,
@@ -111,25 +127,25 @@ class AddAssignmentMark extends StatelessWidget {
                               height: 35,
                               child: TextFormField(
                                 controller:
-                                    seriesTestMarkModel[index].markController,
-                                focusNode: seriesTestMarkModel[index].focusNode,
+                                    assignmentMarkModel[index].markController,
+                                focusNode: assignmentMarkModel[index].focusNode,
                                 onFieldSubmitted: (value) {
-                                  if (index + 1 != seriesTestMarkModel.length) {
-                                    seriesTestMarkModel[index + 1]
+                                  if (index + 1 != assignmentMarkModel.length) {
+                                    assignmentMarkModel[index + 1]
                                         .focusNode
                                         .requestFocus();
                                   }
                                 },
                                 onChanged: (value) {
                                   if (value.length > 2) {
-                                    seriesTestMarkModel[index]
+                                    assignmentMarkModel[index]
                                         .markController
                                         .text = value.substring(0, 2);
-                                    seriesTestMarkModel[index]
+                                    assignmentMarkModel[index]
                                         .markController
                                         .selection = TextSelection.fromPosition(
                                       TextPosition(
-                                          offset: seriesTestMarkModel[index]
+                                          offset: assignmentMarkModel[index]
                                               .markController
                                               .text
                                               .length),
@@ -161,11 +177,11 @@ class AddAssignmentMark extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            title: Text(seriesTestMarkModel[index].name),
+                            title: Text(assignmentMarkModel[index].name),
                           ),
                         );
                       },
-                      itemCount: seriesTestMarkModel.length,
+                      itemCount: assignmentMarkModel.length,
                     )),
               ),
             ],
@@ -177,7 +193,7 @@ class AddAssignmentMark extends StatelessWidget {
 
   void saveSeriesTestData(BuildContext context) {
     if (_addAssignmentMarkFormKey.currentState!.validate()) {
-      if (isAnyMarkFieldEmpty(seriesTestMarkModel)) {
+      if (isAnyMarkFieldEmpty(assignmentMarkModel)) {
         customAlertDialog(
             context: context,
             messageText:
@@ -194,7 +210,7 @@ class AddAssignmentMark extends StatelessWidget {
   }
 
   Future<void> addSeriesTestData(BuildContext context) async {
-    final List<AddMarkModel> seriesTestMarksObjects = seriesTestMarkModel;
+    final List<AddMarkModel> seriesTestMarksObjects = assignmentMarkModel;
     final seriesTestMarksMaps = seriesTestMarksObjects.map((model) {
       return model.toMap();
     }).toList();
