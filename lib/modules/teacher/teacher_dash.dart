@@ -21,6 +21,9 @@ class TeacherDashboard extends StatelessWidget {
 	Widget build(BuildContext context) {
 		return Scaffold(
 			floatingActionButton: ElevatedButton(
+				style: ElevatedButton.styleFrom(
+					backgroundColor:  const Color(0xFFA95DE7)
+				),
 				onPressed: () async {
 					final students = await FirebaseFirestore.instance.collection('students').get();
 					await Future.delayed(const Duration(microseconds: 100));
@@ -39,6 +42,7 @@ class TeacherDashboard extends StatelessWidget {
 			),
 			appBar: AppBar(
 				title: const Text('Teacher Dashboard'),
+				backgroundColor:  const Color(0xFFA95DE7),
 				actions: [
 					IconButton(
 						onPressed: () async {
@@ -61,73 +65,120 @@ class TeacherDashboard extends StatelessWidget {
 				],
 			),
 			body: SafeArea(
-				child: Column(
-					crossAxisAlignment: CrossAxisAlignment.start,
-					children: [
-						Container(
-							padding: const EdgeInsets.all(5),
-							margin: const EdgeInsets.all(5),
-							width: double.infinity,
-							decoration: const BoxDecoration(
-								color: Colors.deepPurpleAccent,
-							),
-							child: ListTile(
-								title: Text(teacherData.name),
-								subtitle: Text(teacherData.email),
-							),
+				child: Container(
+					height: double.infinity,
+					width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
 						),
-						const Text(
-							' Subjects',
-							style: TextStyle(
-								fontSize: 20,
+						
+					),
+					child: Column(
+						crossAxisAlignment: CrossAxisAlignment.start,
+						children: [
+							Container(
+								padding: const EdgeInsets.all(5),
+								margin: const EdgeInsets.all(15),
+								width: double.infinity,
+								decoration: BoxDecoration(
+									color:  const Color(0xFFA95DE7),
+									borderRadius: BorderRadius.circular(30)
+								),
+								child: ListTile(
+									title: Text(
+										teacherData.name,
+										style: const TextStyle(
+											color: Colors.white,
+											fontWeight: FontWeight.w500
+										),
+									),
+									subtitle: Text(
+										teacherData.email,
+										style: const TextStyle(
+											color: Colors.white
+										),
+									),
+								),
 							),
-						),
-						Expanded(
-							child: Consumer<SubjectProvider>(
-								builder: (context, model, child) {
-									if(model.isLoading) {
-										return const Center(
-											child: CircularProgressIndicator(
-												color: Colors.white,
-											),
-										);
-									}
-									else if(model.subjects.isEmpty) {
-										return const Center(
-											child: Text('No data available'),
-										);
-									}
-									else {
-										return ListView.builder(
-											itemBuilder: (context, index) {
-												return Padding(
-													padding: const EdgeInsets.only(top: 3, left: 3, right: 3),
-													child: ListTile(
-														tileColor: Colors.deepOrangeAccent,
-														shape: RoundedRectangleBorder(
-															borderRadius: BorderRadius.circular(10)
-														),
-														contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-														leading: const Icon(Icons.subject),
-														title: Text(
-															model.subjects[index].subjectName,
-															style: const TextStyle(
-																fontWeight: FontWeight.w500,
+							Container(
+								width: double.infinity,
+								margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+								padding: const EdgeInsets.all(10),
+								decoration: BoxDecoration(
+									color: Colors.white,
+									borderRadius: BorderRadius.circular(10)
+								),
+								child: const Text(
+									'Subjects',
+									textAlign: TextAlign.center,
+									style: TextStyle(
+										fontSize: 20,
+									),
+								),
+							),
+							Expanded(
+								child: Consumer<SubjectProvider>(
+									builder: (context, model, child) {
+										if(model.isLoading) {
+											return const Center(
+												child: CircularProgressIndicator(
+													color: Colors.white,
+												),
+											);
+										}
+										else if(model.subjects.isEmpty) {
+											return const Center(
+												child: Text('No data available'),
+											);
+										}
+										else {
+											return ListView.builder(
+												itemBuilder: (context, index) {
+													return Padding(
+														padding: const EdgeInsets.only(top: 3, left: 3, right: 3),
+														child: Container(
+															margin: const EdgeInsets.symmetric(horizontal: 20),
+															decoration: BoxDecoration(
+																color:  Color(0xFFA95DE7),
+																borderRadius: BorderRadius.circular(10)
+															),
+															child: ListTile(
+																contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+																leading: const Icon(Icons.subject, color: Colors.white,),
+																title: Text(
+																	model.subjects[index].subjectName,
+																	style: const TextStyle(
+																		fontWeight: FontWeight.w500,
+																		color: Colors.white
+																	),
+																),
+																subtitle: Text(
+																	model.subjects[index].batch,
+																	style: TextStyle(
+																		color: Colors.white
+																	),
+																),
+																trailing: Text(
+																	model.subjects[index].courseCode,
+																	style: TextStyle(
+																		color: Colors.white
+																	),
+																),
+																onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => TeacherSubjectDashboard(subjectModel: model.subjects[index]))),
 															),
 														),
-														subtitle: Text(model.subjects[index].batch),
-														trailing: Text(model.subjects[index].courseCode),
-														onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => TeacherSubjectDashboard(subjectModel: model.subjects[index]))),
-													),
-												);
-											},
-											itemCount: model.subjects.length,
-										);
-									} 
-								},
-							),
-						)
-					],
+													);
+												},
+												itemCount: model.subjects.length,
+											);
+										} 
+									},
+								),
+							)
+						],
+					),
 				),
 			),
 		);

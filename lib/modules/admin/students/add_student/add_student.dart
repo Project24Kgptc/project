@@ -31,127 +31,137 @@ class AddStudent extends StatelessWidget {
 	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
-				backgroundColor: Colors.deepPurpleAccent,
+				backgroundColor:  Color(0xFFA95DE7),
 				title: const Text('Add Student'),
 			),
-			backgroundColor: Colors.deepPurpleAccent,
 			body: SafeArea(
-				child: Center(
-					child: SingleChildScrollView(
-						child: Container(
-							padding: const EdgeInsets.all(20),
-							margin: const EdgeInsets.all(10),
-							decoration: BoxDecoration(
-								color: Colors.white,
-								borderRadius: BorderRadius.circular(20)
-							),
-							child: Form(
-								key: _addStudentFormkey,
-								child: Column(
-									mainAxisSize: MainAxisSize.min,
-									children: [
-										const Text(
-											"Add Student",
-											style: TextStyle(
-												fontSize: 28,
-												fontWeight: FontWeight.w800,
+				child: Container(
+					height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+					child: Center(
+						child: SingleChildScrollView(
+							child: Container(
+								padding: const EdgeInsets.all(20),
+								margin: const EdgeInsets.all(10),
+								decoration: BoxDecoration(
+									color: Colors.white,
+									borderRadius: BorderRadius.circular(20)
+								),
+								child: Form(
+									key: _addStudentFormkey,
+									child: Column(
+										mainAxisSize: MainAxisSize.min,
+										children: [
+											const Text(
+												"Add Student",
+												style: TextStyle(
+													fontSize: 28,
+													fontWeight: FontWeight.w800,
+												),
 											),
-										),
-										const SizedBox(height: 20,),
-										CustomTextField(
-											labelText: 'Name', 
-											prefixIcon: Icons.person, 
-											controller: nameController, 
-											validator: _validator.name,
-										),
-										const SizedBox(height: 10,),
-										CustomTextField(
-											labelText: 'Register Number', 
-											prefixIcon: Icons.numbers, 
-											controller: regNoController, 
-											keyboardType: TextInputType.number,
-											validator: _validator.registerNumber,
-										),
-										const SizedBox(height: 10,),
-										CustomTextField(
-											labelText: 'Roll Number', 
-											prefixIcon: Icons.numbers, 
-											controller: rollNoController, 
-											keyboardType: TextInputType.number,
-											validator: _validator.rollNumber,
-										),
-										const SizedBox(height: 10,),
-										CustomTextField(
-											labelText: 'Email', 
-											prefixIcon: Icons.email, 
-											controller: emailController, 
-											keyboardType: TextInputType.emailAddress,
-											validator: _validator.email,
-										),
-										const SizedBox(height: 10,),
-										CustomTextField(
-											labelText: 'Phone Number', 
-											prefixIcon: Icons.phone, 
-											controller: phoneNumberController, 
-											keyboardType: TextInputType.number,
-											validator: _validator.phoneNumber,
-										),
-										const SizedBox(height: 10,),
-										CustomTextField(
-											labelText: 'Batch', 
-											hintText: '2021-24',
-											prefixIcon: Icons.people, 
-											controller: batchController, 
-											keyboardType: TextInputType.number,
-											validator: _validator.batch,
-										),
-										const SizedBox(height: 20,),
-										Container(
-											height: 48,
-											decoration: BoxDecoration(
-												borderRadius: BorderRadius.circular(70)
+											const SizedBox(height: 20,),
+											CustomTextField(
+												labelText: 'Name', 
+												prefixIcon: Icons.person, 
+												controller: nameController, 
+												validator: _validator.name,
 											),
-											width: double.infinity,
-											child: ElevatedButton(
-												style: ElevatedButton.styleFrom(
-													backgroundColor: Colors.deepPurpleAccent,
-													shape: RoundedRectangleBorder(
-														borderRadius: BorderRadius.circular(30),
+											const SizedBox(height: 10,),
+											CustomTextField(
+												labelText: 'Register Number', 
+												prefixIcon: Icons.numbers, 
+												controller: regNoController, 
+												keyboardType: TextInputType.number,
+												validator: _validator.registerNumber,
+											),
+											const SizedBox(height: 10,),
+											CustomTextField(
+												labelText: 'Roll Number', 
+												prefixIcon: Icons.numbers, 
+												controller: rollNoController, 
+												keyboardType: TextInputType.number,
+												validator: _validator.rollNumber,
+											),
+											const SizedBox(height: 10,),
+											CustomTextField(
+												labelText: 'Email', 
+												prefixIcon: Icons.email, 
+												controller: emailController, 
+												keyboardType: TextInputType.emailAddress,
+												validator: _validator.email,
+											),
+											const SizedBox(height: 10,),
+											CustomTextField(
+												labelText: 'Phone Number', 
+												prefixIcon: Icons.phone, 
+												controller: phoneNumberController, 
+												keyboardType: TextInputType.number,
+												validator: _validator.phoneNumber,
+											),
+											const SizedBox(height: 10,),
+											CustomTextField(
+												labelText: 'Batch', 
+												hintText: '2021-24',
+												prefixIcon: Icons.people, 
+												controller: batchController, 
+												keyboardType: TextInputType.number,
+												validator: _validator.batch,
+											),
+											const SizedBox(height: 20,),
+											Container(
+												height: 48,
+												decoration: BoxDecoration(
+													borderRadius: BorderRadius.circular(70)
+												),
+												width: double.infinity,
+												child: ElevatedButton(
+													style: ElevatedButton.styleFrom(
+														backgroundColor:  Color(0xFFA95DE7),
+														shape: RoundedRectangleBorder(
+															borderRadius: BorderRadius.circular(10),
+														)
+													),
+													onPressed: () => addStudent(context),
+													child: ValueListenableBuilder(
+														valueListenable: addStudentButtonLoadingNotifier,
+														builder: (context, value, child) {
+															if(value) {
+																return const SizedBox(
+																	height: 22,
+																	width: 22,
+																	child: CircularProgressIndicator(
+																		color: Colors.white,
+																		strokeWidth: 3,
+																	),
+																);
+															}
+															else {
+																return const Text(
+																	'Add',
+																	style: TextStyle(
+																		fontSize: 19,
+																		fontWeight: FontWeight.w900
+																	)
+																);
+															}
+														},
 													)
 												),
-												onPressed: () => addStudent(context),
-												child: ValueListenableBuilder(
-													valueListenable: addStudentButtonLoadingNotifier,
-													builder: (context, value, child) {
-														if(value) {
-															return const SizedBox(
-																height: 22,
-																width: 22,
-																child: CircularProgressIndicator(
-																	color: Colors.white,
-																	strokeWidth: 3,
-																),
-															);
-														}
-														else {
-															return const Text(
-																'Add',
-																style: TextStyle(
-																	fontSize: 19,
-																	fontWeight: FontWeight.w900
-																)
-															);
-														}
-													},
-												)
 											),
-										),
-										const SizedBox(height: 10,)
-									],
+											const SizedBox(height: 10,)
+										],
+									),
 								),
 							),
-						),
-					)
+						)
+					),
 				)
 			),
 		);

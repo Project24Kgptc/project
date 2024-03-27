@@ -24,9 +24,9 @@ class AdminAllStudentsPage extends StatelessWidget {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.deepPurpleAccent,
         appBar: AppBar(
-          backgroundColor: Colors.deepPurpleAccent,
+          // ignore: prefer_const_constructors
+          backgroundColor:  Color(0xFFA95DE7),
           title: const Text('Students'),
           actions: [
             Consumer<StudentsBatchProvider>(
@@ -41,7 +41,7 @@ class AdminAllStudentsPage extends StatelessWidget {
                           border: Border.all(color: Colors.white),
                           borderRadius: BorderRadius.circular(5)),
                       child: DropdownButton<String>(
-                          dropdownColor: Colors.deepPurpleAccent,
+                          dropdownColor:  Color(0xFFA95DE7),
                           icon: const Icon(Icons.keyboard_arrow_down_sharp),
                           iconEnabledColor: Colors.white,
                           value: value,
@@ -64,7 +64,7 @@ class AdminAllStudentsPage extends StatelessWidget {
                     context, MaterialPageRoute(builder: (ctx) => AddStudent())),
                 style: const ButtonStyle(
                     backgroundColor:
-                        MaterialStatePropertyAll(Colors.deepPurpleAccent),
+                        MaterialStatePropertyAll( Color(0xFFA95DE7)),
                     side: MaterialStatePropertyAll(
                         BorderSide(color: Colors.white)),
                     shadowColor: MaterialStatePropertyAll(Colors.white)),
@@ -73,52 +73,68 @@ class AdminAllStudentsPage extends StatelessWidget {
             ),
           ],
         ),
-        body: SafeArea(child: Consumer<StudentsProvider>(
-          builder: (context, model, child) {
-            if (model.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              );
-            } else if (model.filteredStudents.isEmpty) {
-              return const Center(
-                child: Text('No data available'),
-              );
-            } else {
-              return ListView.builder(
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 3, left: 3, right: 3),
-                    child: ListTile(
-                      tileColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 0),
-                      leading: model.students[index].profile == '' ? const CircleAvatar(
-                        backgroundColor: Colors.deepPurpleAccent,
-                        child: Icon(Icons.person, color: Colors.white,),
-                      ) : CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: NetworkImage(model.students[index].profile),
-                      ),
-                      title: Text(
-                        model.filteredStudents[index].name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
+        body: SafeArea(child: Container(
+          height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+          child: Consumer<StudentsProvider>(
+            builder: (context, model, child) {
+              if (model.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                );
+              } else if (model.filteredStudents.isEmpty) {
+                return const Center(
+                  child: Text('No data available'),
+                );
+              } else {
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 3, left: 3, right: 3),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 0),
+                          leading: model.students[index].profile == '' ? const CircleAvatar(
+                            backgroundColor:  Color(0xFFA95DE7),
+                            child: Icon(Icons.person, color: Colors.white,),
+                          ) : CircleAvatar(
+                            backgroundColor: Colors.white,
+                            backgroundImage: NetworkImage(model.students[index].profile),
+                          ),
+                          title: Text(
+                            model.filteredStudents[index].name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          trailing: Text(model.filteredStudents[index].batch),
+                          onTap: () => showMyBottomSheet(
+                              context, model.filteredStudents[index]),
                         ),
                       ),
-                      trailing: Text(model.filteredStudents[index].batch),
-                      onTap: () => showMyBottomSheet(
-                          context, model.filteredStudents[index]),
-                    ),
-                  );
-                },
-                itemCount: model.filteredStudents.length,
-              );
-            }
-          },
+                    );
+                  },
+                  itemCount: model.filteredStudents.length,
+                );
+              }
+            },
+          ),
         )),
       ),
     );
@@ -131,7 +147,7 @@ class AdminAllStudentsPage extends StatelessWidget {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         showDragHandle: true,
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor:  Color(0xFFA95DE7),
         context: context,
         builder: (context) {
           return SizedBox(

@@ -27,270 +27,329 @@ class TeacherSubjectDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFFA95DE7),
         title: Text(subjectModel.subjectName),
       ),
       body: SafeArea(
-        child: ListView(
-          children: [
-            FutureBuilder(
-              future: getAssignments(context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ExpansionTile(
-                    title: const Text('Assignments'),
-                    trailing: IconButton(
-                      onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (ctx) => AddAssignmentScreen(
-                                  subjectId: subjectModel.subjectId))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Center(child: CircularProgressIndicator()),
-                      )
-                    ],
-                  );
-                } else if (!snapshot.hasData) {
-                  return ExpansionTile(
-                    title: const Text('Assignments'),
-                    trailing: IconButton(
-                      onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (ctx) => AddAssignmentScreen(
-                                  subjectId: subjectModel.subjectId))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Text('No data'),
-                      )
-                    ],
-                  );
-                } else {
-                  return ExpansionTile(
-                    title: const Text('Assignments'),
-                    trailing: IconButton(
-                      onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (ctx) => AddAssignmentScreen(
-                                  subjectId: subjectModel.subjectId))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: snapshot.data!.map((model) {
-                      return ListTile(
-                        title: Text(model.title),
-                        subtitle: Text(model.description),
-                        trailing: Text(model.dueDate),
-                        onTap: () async {
-                          List<AddMarkModel>? markModel =
-                              await generateSeriestestModel();
-                          Navigator.push(
-                              context,
+        child: Container(
+          height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+          child: ListView(
+            children: [
+              const SizedBox(height: 20,),
+              FutureBuilder(
+                future: getAssignments(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Assignments', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) => AddAssignmentMark(
-                                        assignmentdata: model,
-                                        subjectModel: subjectModel,
-                                        seriesTestMarkModel:
-                                            markModel!.toList(),
-                                      )));
-                        },
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            FutureBuilder(
-              future: getSeriesTests(context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ExpansionTile(
-                    title: const Text('Series Tests'),
-                    trailing: IconButton(
-                      onPressed: () => gotoAddSeriesTestScreen(context),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Center(child: CircularProgressIndicator()),
-                      )
-                    ],
-                  );
-                } else if (!snapshot.hasData) {
-                  return ExpansionTile(
-                    title: const Text('Series Tests'),
-                    trailing: IconButton(
-                      onPressed: () => gotoAddSeriesTestScreen(context),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Text('No data'),
-                      )
-                    ],
-                  );
-                } else {
-                  return ExpansionTile(
-                    title: const Text('Series Tests'),
-                    trailing: IconButton(
-                      onPressed: () => gotoAddSeriesTestScreen(context),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: snapshot.data!.map((model) {
-                      return ListTile(
-                        title: Text(model.title),
-                        subtitle: Text(model.subjectName),
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            FutureBuilder(
-              future: getAttentence(context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ExpansionTile(
-                    title: const Text('Attendances'),
-                    trailing: IconButton(
-                      onPressed: () =>
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddAttendanceScreen(
-                                    batch: subjectModel.batch,
-                                    subjectId: subjectModel.subjectId,
-                                    subjectName: subjectModel.subjectName,
-                                    teacherName: subjectModel.teacherName,
-                                  ))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Center(child: CircularProgressIndicator()),
-                      )
-                    ],
-                  );
-                } else if (!snapshot.hasData) {
-                  return ExpansionTile(
-                    title: const Text('Attendances'),
-                    trailing: IconButton(
-                      onPressed: () =>
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddAttendanceScreen(
-                                    batch: subjectModel.batch,
-                                    subjectId: subjectModel.subjectId,
-                                    subjectName: subjectModel.subjectName,
-                                    teacherName: subjectModel.teacherName,
-                                  ))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Text('No data'),
-                      )
-                    ],
-                  );
-                } else {
-                  return ExpansionTile(
-                    collapsedBackgroundColor: Colors.deepOrangeAccent,
-                    title: const Text('Attendances'),
-                    trailing: IconButton(
-                      onPressed: () =>
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddAttendanceScreen(
-                                    batch: subjectModel.batch,
-                                    subjectId: subjectModel.subjectId,
-                                    subjectName: subjectModel.subjectName,
-                                    teacherName: subjectModel.teacherName,
-                                  ))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: snapshot.data!.map((model) {
-                      return ListTile(
-                        title: Text(model.date.toString().substring(0, 10)),
-                        subtitle: Text(model.hour),
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-            //StudyMaterials
-            const SizedBox(
-              height: 5,
-            ),
-            FutureBuilder(
-              future: getStudyMaterials(context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ExpansionTile(
-                    title: const Text('Study Materials'),
-                    trailing: IconButton(
-                      onPressed: () =>
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddStudyMaterials(
-                                subId: subjectModel.subjectId,
-                                    semester: subjectModel.semester,
-                                    subject: subjectModel.subjectName,
-                                  ))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Center(child: CircularProgressIndicator()),
-                      )
-                    ],
-                  );
-                } else if (!snapshot.hasData) {
-                  return ExpansionTile(
-                    title: const Text('Study Materials'),
-                    trailing: IconButton(
-                      onPressed: () =>
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddStudyMaterials(
-                                 subId: subjectModel.subjectId,
-                                    semester: subjectModel.semester,
-                                    subject: subjectModel.subjectName,
-                                  ))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: const [
-                      ListTile(
-                        title: Text('No data'),
-                      )
-                    ],
-                  );
-                } else {
-                  return ExpansionTile(
-                    collapsedBackgroundColor: Colors.deepOrangeAccent,
-                    title: const Text('Study Materials'),
-                    trailing: IconButton(
-                      onPressed: () =>
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => AddStudyMaterials(
-                                 subId: subjectModel.subjectId,
-                                    semester: subjectModel.semester,
-                                    subject: subjectModel.subjectName,
-                                  ))),
-                      icon: const Icon(Icons.add),
-                    ),
-                    children: snapshot.data!.map((model) {
-                      return ListTile(
-                        title: Text(model.name.toString()),
-                        subtitle: Text(model.semester),
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-          ],
+                                  builder: (ctx) => AddAssignmentScreen(
+                                      subjectId: subjectModel.subjectId))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      ),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Assignments', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (ctx) => AddAssignmentScreen(
+                                      subjectId: subjectModel.subjectId))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Assignments', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (ctx) => AddAssignmentScreen(
+                                      subjectId: subjectModel.subjectId))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: snapshot.data!.map((model) {
+                          return ListTile(
+                            title: Text(model.title),
+                            subtitle: Text(model.description),
+                            trailing: Text(model.dueDate),
+                            onTap: () async {
+                              List<AddMarkModel>? markModel =
+                                  await generateSeriestestModel();
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddAssignmentMark(
+                                            assignmentdata: model,
+                                            subjectModel: subjectModel,
+                                            seriesTestMarkModel:
+                                                markModel!.toList(),
+                                          )));
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              FutureBuilder(
+                future: getSeriesTests(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Series Tests', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () => gotoAddSeriesTestScreen(context),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      ),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Series Tests', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () => gotoAddSeriesTestScreen(context),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Series Tests', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () => gotoAddSeriesTestScreen(context),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: snapshot.data!.map((model) {
+                          return ListTile(
+                            title: Text(model.title),
+                            subtitle: Text(model.subjectName),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              FutureBuilder(
+                future: getAttentence(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Attendances', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => AddAttendanceScreen(
+                                        batch: subjectModel.batch,
+                                        subjectId: subjectModel.subjectId,
+                                        subjectName: subjectModel.subjectName,
+                                        teacherName: subjectModel.teacherName,
+                                      ))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      ),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Attendances', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => AddAttendanceScreen(
+                                        batch: subjectModel.batch,
+                                        subjectId: subjectModel.subjectId,
+                                        subjectName: subjectModel.subjectName,
+                                        teacherName: subjectModel.teacherName,
+                                      ))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Attendances'),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => AddAttendanceScreen(
+                                        batch: subjectModel.batch,
+                                        subjectId: subjectModel.subjectId,
+                                        subjectName: subjectModel.subjectName,
+                                        teacherName: subjectModel.teacherName,
+                                      ))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: snapshot.data!.map((model) {
+                          return ListTile(
+                            title: Text(model.date.toString().substring(0, 10)),
+                            subtitle: Text(model.hour),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+              //StudyMaterials
+              const SizedBox(
+                height: 5,
+              ),
+              FutureBuilder(
+                future: getStudyMaterials(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Study Materials', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => AddStudyMaterials(
+                                    subId: subjectModel.subjectId,
+                                        semester: subjectModel.semester,
+                                        subject: subjectModel.subjectName,
+                                      ))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      ),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Study Materials', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => AddStudyMaterials(
+                                     subId: subjectModel.subjectId,
+                                        semester: subjectModel.semester,
+                                        subject: subjectModel.subjectName,
+                                      ))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      child: ExpansionTile(
+                        title: const Text('Study Materials', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: const Color(0xFFA95DE7),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => AddStudyMaterials(
+                                     subId: subjectModel.subjectId,
+                                        semester: subjectModel.semester,
+                                        subject: subjectModel.subjectName,
+                                      ))),
+                          icon: const Icon(Icons.add, color: Colors.white,),
+                        ),
+                        children: snapshot.data!.map((model) {
+                          return ListTile(
+                            title: Text(model.name.toString()),
+                            subtitle: Text(model.semester),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:student_analytics/data_models/study_materials.dart';
 import 'package:student_analytics/widgets/snack_bar.dart';
+import 'package:student_analytics/widgets/text_field.dart';
 
 class AddStudyMaterials extends StatefulWidget {
   const AddStudyMaterials(
@@ -83,93 +84,105 @@ class _AddStudyMaterialsState extends State<AddStudyMaterials> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFFA95DE7),
         title: const Text('Add Study Materials'),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                    labelText: 'enter Document Title',
-                    border: OutlineInputBorder()),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(
-                      10.0), // Adjust the value for the desired curve
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+      body: Container(
+        height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomTextField(
+                  labelText: 'Document title',
+                  prefixIcon: Icons.image,
+                  controller: titleController,
+                  validator: (s) => null,
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _pickFile,
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(
-                        15.0), // Use the same value as in the BoxDecoration
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: const Text(
-                        'Choose File',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
+                        10.0), // Adjust the value for the desired curve
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _pickFile,
+                      borderRadius: BorderRadius.circular(
+                          15.0), // Use the same value as in the BoxDecoration
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        child: const Text(
+                          'Choose File',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 15),
-              if (_selectedFile != null)
-                Container(
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.file_present_rounded,
-                        color: Colors.blue,
-                        size: 60,
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text('Selected File: ${_selectedFile!.name}'),
-                      const SizedBox(height: 20),
-                    ],
+                const SizedBox(height: 15),
+                if (_selectedFile != null)
+                  Container(
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.file_present_rounded,
+                          color: Colors.blue,
+                          size: 60,
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text('Selected File: ${_selectedFile!.name}'),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purpleAccent,
+                      foregroundColor: Colors.white),
+                  onPressed: () async {
+                    if (titleController.text.isNotEmpty &&
+                        _selectedFile != null) {
+                      // perform action
+                      await _uploadFile(widget.subId);
+                    } else {
+                      showSnackBar(
+                          context: context,
+                          message: 'invalid',
+                          icon: const Icon(Icons.warning_rounded));
+                    }
+                  },
+                  child: const Text('Upload File'),
                 ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purpleAccent,
-                    foregroundColor: Colors.white),
-                onPressed: () async {
-                  if (titleController.text.isNotEmpty &&
-                      _selectedFile != null) {
-                    // perform action
-                    await _uploadFile(widget.subId);
-                  } else {
-                    showSnackBar(
-                        context: context,
-                        message: 'invalid',
-                        icon: const Icon(Icons.warning_rounded));
-                  }
-                },
-                child: const Text('Upload File'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

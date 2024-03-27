@@ -30,107 +30,118 @@ class AddAssignmentScreen extends StatelessWidget {
 		return GestureDetector(
 			onTap: () => unFocusAllFields(),
 			child: Scaffold(
-				backgroundColor: Colors.deepPurpleAccent,
+				backgroundColor: Color(0xFFA95DE7),
 				appBar: AppBar(
-					backgroundColor: Colors.deepPurpleAccent,
+					backgroundColor: Color(0xFFA95DE7),
 					title: const Text('Add Assignment'),
 				),
 				body: SafeArea(
-					child: Center(
-						child: SingleChildScrollView(
-							child: Container(
-								padding: const EdgeInsets.all(20),
-								margin: const EdgeInsets.all(10),
-								decoration: BoxDecoration(
-									color: Colors.white,
-									borderRadius: BorderRadius.circular(20)
-								),
-								child: Form(
-									key: _addAssignmentFormKey,
-									child: Column(
-										mainAxisSize: MainAxisSize.min,
-										children: [
-											const Text(
-												"Add Assignment",
-												style: TextStyle(
-													fontSize: 28,
-													fontWeight: FontWeight.w800,
-												),
-											),
-											const SizedBox(height: 20,),
-											CustomTextField(
-												labelText: 'Title', 
-												focusNode: _titleFocusNode,
-												prefixIcon: Icons.title, 
-												controller: _titleController, 
-												validator: _validator.title,
-											),
-											const SizedBox(height: 10,),
-											CustomTextField(
-												labelText: 'Description', 
-												prefixIcon: Icons.description, 
-												focusNode: _descriptionFocusNode,
-												controller: _descriptionController, 
-												validator: _validator.description,
-											),
-											const SizedBox(height: 10,),
-											CustomTextField(
-												labelText: 'Due Date', 
-												focusNode: _duedateFocusNode,
-												prefixIcon: Icons.date_range, 
-												controller: _dueDateController, 
-												keyboardType: TextInputType.none,
-												onTap: () => pickDate(context),
-												validator: _validator.dueDate,
-											),
-											const SizedBox(height: 10,),
-											Container(
-												height: 48,
-												decoration: BoxDecoration(
-													borderRadius: BorderRadius.circular(70)
-												),
-												width: double.infinity,
-												child: ElevatedButton(
-													style: ElevatedButton.styleFrom(
-														backgroundColor: Colors.deepPurpleAccent,
-														shape: RoundedRectangleBorder(
-															borderRadius: BorderRadius.circular(30),
-														)
-													),
-													onPressed: () => addAssignment(context),
-													child: ValueListenableBuilder(
-														valueListenable: _addAssignmentButtonNotifier,
-														builder: (context, value, child) {
-															if(value) {
-																return const SizedBox(
-																	height: 22,
-																	width: 22,
-																	child: CircularProgressIndicator(
-																		color: Colors.white,
-																		strokeWidth: 3,
-																	),
-																);
-															}
-															else {
-																return const Text(
-																	'Add',
-																	style: TextStyle(
-																		fontSize: 19,
-																		fontWeight: FontWeight.w900
-																	)
-																);
-															}
-														},
-													)
-												),
-											),
-											const SizedBox(height: 10,)
-										],
-									),
-								),
-							),
-						)
+					child: Container(
+						height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
 					),
+										  child: Center(
+											child: SingleChildScrollView(
+												child: Container(
+													padding: const EdgeInsets.all(20),
+													margin: const EdgeInsets.all(10),
+													decoration: BoxDecoration(
+														color: Colors.white,
+														borderRadius: BorderRadius.circular(20)
+													),
+													child: Form(
+														key: _addAssignmentFormKey,
+														child: Column(
+															mainAxisSize: MainAxisSize.min,
+															children: [
+																const Text(
+																	"Add Assignment",
+																	style: TextStyle(
+																		fontSize: 28,
+																		fontWeight: FontWeight.w800,
+																	),
+																),
+																const SizedBox(height: 20,),
+																CustomTextField(
+																	labelText: 'Title', 
+																	focusNode: _titleFocusNode,
+																	prefixIcon: Icons.title, 
+																	controller: _titleController, 
+																	validator: _validator.title,
+																),
+																const SizedBox(height: 10,),
+																CustomTextField(
+																	labelText: 'Description', 
+																	prefixIcon: Icons.description, 
+																	focusNode: _descriptionFocusNode,
+																	controller: _descriptionController, 
+																	validator: _validator.description,
+																),
+																const SizedBox(height: 10,),
+																CustomTextField(
+																	labelText: 'Due Date', 
+																	focusNode: _duedateFocusNode,
+																	prefixIcon: Icons.date_range, 
+																	controller: _dueDateController, 
+																	keyboardType: TextInputType.none,
+																	onTap: () => pickDate(context),
+																	validator: _validator.dueDate,
+																),
+																const SizedBox(height: 10,),
+																Container(
+																	height: 48,
+																	decoration: BoxDecoration(
+																		borderRadius: BorderRadius.circular(70)
+																	),
+																	width: double.infinity,
+																	child: ElevatedButton(
+																		style: ElevatedButton.styleFrom(
+																			backgroundColor: Color(0xFFA95DE7),
+																			shape: RoundedRectangleBorder(
+																				borderRadius: BorderRadius.circular(10),
+																			)
+																		),
+																		onPressed: () => addAssignment(context),
+																		child: ValueListenableBuilder(
+																			valueListenable: _addAssignmentButtonNotifier,
+																			builder: (context, value, child) {
+																				if(value) {
+																					return const SizedBox(
+																						height: 22,
+																						width: 22,
+																						child: CircularProgressIndicator(
+																							color: Colors.white,
+																							strokeWidth: 3,
+																						),
+																					);
+																				}
+																				else {
+																					return const Text(
+																						'Add',
+																						style: TextStyle(
+																							fontSize: 19,
+																							fontWeight: FontWeight.w900
+																						)
+																					);
+																				}
+																			},
+																		)
+																	),
+																),
+																const SizedBox(height: 10,)
+															],
+														),
+													),
+												),
+											)
+										  ),
+										),
 				)
 			),
 		);

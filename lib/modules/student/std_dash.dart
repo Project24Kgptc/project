@@ -69,8 +69,32 @@ class StudentDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     _imageNotifier.value = studentData.profile;
     return Scaffold(
+      drawer: Drawer(
+        backgroundColor:  Color(0xFFA95DE7),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChangePassword()));
+              }, 
+              child: Text(
+                'Change Password   ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                ),
+            ))
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Student Dashboard'),
+        backgroundColor:  Color(0xFFA95DE7),
         actions: [
           IconButton(
             onPressed: () async {
@@ -94,151 +118,164 @@ class StudentDashboard extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Column(
-         
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ChangePassword()));
-                },
-                child: Text('Change Password    ',
-                    style: TextStyle(color: Colors.blue)),
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(color: Colors.white, boxShadow: [
-                BoxShadow(blurRadius: 2, spreadRadius: 0, offset: Offset(-2, 2))
-              ]),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                leading: InkWell(
-                  onTap: () async {
-                    await pickImageFromGallery(context);
-                  },
-                  child: ValueListenableBuilder<String>(
-                    valueListenable: _imageNotifier,
-                    builder: (context, image, _) {
-                    if(image == '') {
-                      return const CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Colors.deepPurpleAccent,
-                        child: Icon(Icons.person, color: Colors.white,),
-                      );
-                    }
-                    else {
-                      return CircleAvatar(
-                        radius: 25,
-                        backgroundImage: 
-                        NetworkImage(image),
-                      );
-                    }
-                      
+        child: Container(
+          height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+          child: Column(
+           
+            children: [
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20)
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  leading: InkWell(
+                    onTap: () async {
+                      await pickImageFromGallery(context);
                     },
+                    child: ValueListenableBuilder<String>(
+                      valueListenable: _imageNotifier,
+                      builder: (context, image, _) {
+                      if(image == '') {
+                        return const CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Colors.deepPurpleAccent,
+                          child: Icon(Icons.person, color: Colors.white,),
+                        );
+                      }
+                      else {
+                        return CircleAvatar(
+                          radius: 25,
+                          backgroundImage: 
+                          NetworkImage(image),
+                        );
+                      }
+                        
+                      },
+                    ),
+                  ),
+                  title: Text(
+                    studentData.name,
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.w900),
+                  ),
+                  subtitle: Text(
+                    studentData.regNo,
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                 ),
-                title: Text(
-                  studentData.name,
-                  style: const TextStyle(
-                      fontSize: 17, fontWeight: FontWeight.w900),
-                ),
-                subtitle: Text(
-                  studentData.regNo,
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600),
-                ),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 8,
-                    color: Colors.deepPurpleAccent,
-                    backgroundColor: Colors.grey,
-                    value: (percentage / 100),
+              const SizedBox(
+                height: 20,
+              ),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    height: 150,
+                    width: 150,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 8,
+                      color:  Color(0xFFA95DE7),
+                      backgroundColor: Colors.white,
+                      value: (percentage / 100),
+                    ),
                   ),
-                ),
-                Text(
-                  percentage.toString().length > 3
-                      ? '${percentage.toString().substring(0,3)}%'
-                      : '$percentage%',
-                  style: const TextStyle(
-                      fontSize: 25, fontWeight: FontWeight.w900),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 5),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                  color: Colors.purple, borderRadius: BorderRadius.circular(5)),
-              child: const Text(
-                'Subjects',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 17),
+                  Text(
+                    percentage.toString().length > 3
+                        ? '${percentage.toString().substring(0,3)}%'
+                        : '$percentage%',
+                    style: const TextStyle(
+                        fontSize: 25, fontWeight: FontWeight.w900),
+                  )
+                ],
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurpleAccent,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: ListTile(
-                        onTap: () async {
-                          List<AttendanceModel> attentence =
-                              await getSubjAttendance(
-                                  subjects[index].subjectId);
-
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SubjectDashboard(
-                              totalAttentence: attentence,
-                              subject: subjects[index],
-                              studentData: studentData,
-                            ),
-                          ));
-                        },
-                        title: Text(
-                          subjects[index].subjectName,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16),
-                        ),
-                      ));
-                },
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 3,
-                ),
-                itemCount: subjects.length,
+              const SizedBox(
+                height: 40,
               ),
-            )
-          ],
+              Container(
+								width: double.infinity,
+								margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+								padding: const EdgeInsets.all(10),
+								decoration: BoxDecoration(
+									color: Colors.white,
+									borderRadius: BorderRadius.circular(10)
+								),
+								child: const Text(
+									'Subjects',
+									textAlign: TextAlign.center,
+									style: TextStyle(
+										fontSize: 20,
+									),
+								),
+							),
+              const SizedBox(
+                height: 5,
+              ),
+              Expanded(
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+															decoration: BoxDecoration(
+																color:  Color(0xFFA95DE7),
+																borderRadius: BorderRadius.circular(10)
+															),
+                        child: ListTile(
+                          onTap: () async {
+                            List<AttendanceModel> attentence =
+                                await getSubjAttendance(
+                                    subjects[index].subjectId);
+        
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => SubjectDashboard(
+                                totalAttentence: attentence,
+                                subject: subjects[index],
+                                studentData: studentData,
+                              ),
+                            ));
+                          },
+                          title: Text(
+																	subjects[index].subjectName,
+																	style: const TextStyle(
+																		fontWeight: FontWeight.w500,
+																		color: Colors.white
+																	),
+																),
+																subtitle: Text(
+																	subjects[index].batch,
+																	style: TextStyle(
+																		color: Colors.white
+																	),
+																),
+                                trailing: Text(
+																	subjects[index].courseCode,
+																	style: TextStyle(
+																		color: Colors.white
+																	),
+																),
+                        ));
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 3,
+                  ),
+                  itemCount: subjects.length,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -28,125 +28,142 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurpleAccent,
+      backgroundColor:  const Color(0xFFA95DE7),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
+        child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background_images/bg.jpeg'),
+              fit: BoxFit.cover
+            ),
+            
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color:  const Color(0xFFA95DE7),
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                          )
+                        ]),
+                    child: ListTile(
+                      title: Text(
+                        adminModel.name,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17),
+                      ),
+                      subtitle: Text(
+                        adminModel.email,
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      trailing: IconButton(
+                        onPressed: () => logout(context),
+                        icon: const Icon(
+                          Icons.login_outlined,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )),
+                InkWell(
+                  onTap: () {
+                    getSubjects(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ViewSubjectRooms()));
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 200,
+                    decoration: BoxDecoration(
+                        color:  Color(0xFFA95DE7),
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                          )
+                        ]),
+                    child: Center(
+                      child: Text(
+                        'View SubjectRooms',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
                   width: double.infinity,
                   margin: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      color: Colors.deepPurpleAccent,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.white,
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        )
-                      ]),
-                  child: ListTile(
-                    title: Text(
-                      adminModel.name,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17),
-                    ),
-                    subtitle: Text(
-                      adminModel.email,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    trailing: IconButton(
-                      onPressed: () => logout(context),
-                      icon: const Icon(
-                        Icons.login_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )),
-              InkWell(
-                onTap: () {
-                  getSubjects(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ViewSubjectRooms()));
-                },
-                child: Container(
-                  height: 50,
-                  width: 200,
-                  decoration: BoxDecoration(
-                      color: Colors.deepPurpleAccent,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.white,
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        )
-                      ]),
-                  child: Center(
-                    child: Text('View SubjectRooms'),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: InkWell(
+                        onTap: () => navigateToStudentsPage(context),
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              left: 10, top: 10, bottom: 10, right: 5),
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                              color:  Color(0xFFA95DE7),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Text(
+                            'Students',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      )),
+                      Expanded(
+                          child: InkWell(
+                        onTap: () => navigateToTeachersPage(context),
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              left: 5, top: 10, bottom: 10, right: 10),
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                              color:  Color(0xFFA95DE7),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Text(
+                            'Teachers',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      )),
+                    ],
                   ),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: InkWell(
-                      onTap: () => navigateToStudentsPage(context),
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                            left: 10, top: 10, bottom: 10, right: 5),
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurpleAccent,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: const Text(
-                          'Students',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    )),
-                    Expanded(
-                        child: InkWell(
-                      onTap: () => navigateToTeachersPage(context),
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                            left: 5, top: 10, bottom: 10, right: 10),
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurpleAccent,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: const Text(
-                          'Teachers',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    )),
-                  ],
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

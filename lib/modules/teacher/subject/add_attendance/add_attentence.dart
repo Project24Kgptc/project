@@ -63,11 +63,12 @@ class _AddAttendanceScreenState extends State<AddAttendanceScreen> {
     var provider = Provider.of<AttendanceProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Attendance'),
+        backgroundColor: const Color(0xFFA95DE7),
+        title: const Text('Student Attendance'),
         actions: [
           DropdownButton<String>(
             elevation: 0,
-            hint: Text('Select Hour'),
+            hint: const Text('Select Hour'),
             value: selectedHour,
             onChanged: (String? newValue) {
               setState(() {
@@ -82,55 +83,77 @@ class _AddAttendanceScreenState extends State<AddAttendanceScreen> {
               );
             }).toList(),
           ),
-          SizedBox(
+          const SizedBox(
             width: 18,
           )
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: studentList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(studentList[index].name),
-                      subtitle: Text(studentList[index].rollNo),
-                      trailing: Checkbox(
-                        value: checkedStudents[index],
-                        onChanged: (bool? value) {
-                          setState(() {
-                            checkedStudents[index] = value ?? false;
-                          });
-                        },
-                      ),
-                    );
-                  },
+        child: Container(
+          height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: studentList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color:  Colors.white,
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: ListTile(
+                          title: Text(studentList[index].name),
+                          leading: CircleAvatar(
+                            radius: 13,
+                            backgroundColor: const Color(0xFFA95DE7),
+                            child: Text(studentList[index].rollNo, style: const TextStyle(color: Colors.white),),
+                          ),
+                          trailing: Checkbox(
+                            value: checkedStudents[index],
+                            onChanged: (bool? value) {
+                              setState(() {
+                                checkedStudents[index] = value ?? false;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  addCheckedStudents();
-                 provider. addAttentence(
-                      AttendanceModel(
-                        subjectId: widget.subjectId,
-                        teacherName: widget.teacherName,
-                        studentsList: checkedRoll,
-                        subjectName: widget.subjectName,
-                        date: DateTime.now().toString(),
-                        hour: selectedHour,
-                      ),
-                      context);
-                },
-                child: Text('Add Attentence'),
-              ),
-              SizedBox(
-                height: 10,
-              )
-            ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFA95DE7)),
+                  onPressed: () {
+                    addCheckedStudents();
+                   provider. addAttentence(
+                        AttendanceModel(
+                          subjectId: widget.subjectId,
+                          teacherName: widget.teacherName,
+                          studentsList: checkedRoll,
+                          subjectName: widget.subjectName,
+                          date: DateTime.now().toString(),
+                          hour: selectedHour,
+                        ),
+                        context);
+                  },
+                  child: const Text('Add Attentence'),
+                ),
+                const SizedBox(
+                  height: 10,
+                )
+              ],
+            ),
           ),
         ),
       ),

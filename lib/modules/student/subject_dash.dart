@@ -37,224 +37,234 @@ class SubjectDashboard extends StatelessWidget {
     double percentage = (presentCount / (totalAttentence.isEmpty ? 1 : totalAttentence.length)) * 100;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFFA95DE7),
         title: Text(subject.subjectName),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        blurRadius: 2, spreadRadius: 0, offset: Offset(-2, 2))
-                  ]),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                title: Text(
-                  subject.subjectName,
-                  style: const TextStyle(
-                      fontSize: 17, fontWeight: FontWeight.w900),
-                ),
-                subtitle: Text(
-                  subject.courseCode,
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 8,
-                    color: Colors.deepPurpleAccent,
-                    backgroundColor: Colors.grey,
-                    value: percentage/100,
+        child: Container(
+          height: double.infinity,
+          			width: double.infinity,
+					decoration: const BoxDecoration(
+						image: DecorationImage(
+							image: AssetImage('assets/background_images/bg.jpeg'),
+							fit: BoxFit.cover
+						),
+						
+					),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Color(0xFFA95DE7),
+                    borderRadius:BorderRadius.circular(10)),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                  title: Text(
+                    subject.subjectName,
+                    style: const TextStyle(
+                        fontSize: 19, fontWeight: FontWeight.w800,color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    subject.courseCode,
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600,color: Colors.white
+                      ),
                   ),
                 ),
-                Column(
-                  children: [
-                    Text(
-                      percentage.toString().length > 3
-                          ? '${percentage.toString().substring(0, 3)}%'
-                          : '$percentage%',
-                      style: const TextStyle(
-                          fontSize: 25, fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    height: 150,
+                    width: 150,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 8,
+                      color: Color(0xFFA95DE7),
+                      backgroundColor: Colors.white,
+                      value: percentage/100 + 0.25,
                     ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DayAttentence(
-                                    subject: subject.subjectName,
-                                    attentenceList: totalAttentence)));
-                      },
-                      icon: const Icon(Icons.open_in_browser),
-                    )
-                  ],
-                )
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        percentage.toString().length > 3
+                            ? '${percentage.toString().substring(0, 3)}%'
+                            : '$percentage%',
+                        style: const TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.w900),
+                      ),
+                      // IconButton(
+                      //   onPressed: () {
+                      //     Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //             builder: (context) => DayAttentence(
+                      //                 subject: subject.subjectName,
+                      //                 attentenceList: totalAttentence)));
+                      //   },
+                      //   icon: const Icon(Icons.open_in_browser),
+                      // )
+                    ],
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              FutureBuilder(
+                  future: getAssignments(context),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const ExpansionTile(
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        title: Text('Assignments', style: TextStyle(color: Colors.white),),
+                        children: [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      );
+                    } else if (!snapshot.hasData) {
+                      return const ExpansionTile(
+                        title: const Text('Assignments', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        children: [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      );
+                    } else {
+                      return ExpansionTile(
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        title: const Text('Assignments', style: TextStyle(color: Colors.white),),
+                        children: snapshot.data!.map((model) {
+                          String mark = '0';
+                          for (var i = 0; i < model.submissions.length; i++) {
+                            model.submissions[i]['regNo'] == studentData.regNo
+                                ? mark = model.submissions[i]['mark']
+                                : '0';
+                          }
+        
+                          return ListTile(
+                            title: Text(model.title),
+                            subtitle: Text(model.description),
+                            trailing: Column(
+                              children: [
+                                Text(model.dueDate),
+                                Text(mark),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                FutureBuilder(
+                  future: getSeriesTests(context),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const ExpansionTile(
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        title: Text('Series Tests', style: TextStyle(color: Colors.white),),
+                        children: [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      );
+                    } else if (!snapshot.hasData) {
+                      return const ExpansionTile(
+                        title: Text('Series Tests', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        children: [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      );
+                    } else {
+                      return ExpansionTile(
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        title: const Text('Series Tests', style: TextStyle(color: Colors.white),),
+                        children: snapshot.data!.map((model) {
+                          String mark = '0';
+                          for (var i = 0; i < model.marks.length; i++) {
+                            model.marks[i]['regNo'] == studentData.regNo
+                                ? mark = model.marks[i]['mark']
+                                : '0';
+                          }
+                          return ListTile(
+                            title: Text(model.title),
+                            subtitle: Text(model.subjectName),
+                            trailing: Text(mark.toString()),
+                          );
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                FutureBuilder(
+                  future: getStudyMaterials(context),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const ExpansionTile(
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        title: Text('Study Materials', style: TextStyle(color: Colors.white),),
+                        children: [
+                          ListTile(
+                            title: Center(child: CircularProgressIndicator()),
+                          )
+                        ],
+                      );
+                    } else if (!snapshot.hasData) {
+                      return const ExpansionTile(
+                        title: Text('Study Materials', style: TextStyle(color: Colors.white),),
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        children: [
+                          ListTile(
+                            title: Text('No data'),
+                          )
+                        ],
+                      );
+                    } else {
+                      return ExpansionTile(
+                        collapsedBackgroundColor: Color(0xFFA95DE7),
+                        title: const Text('Study Materials', style: TextStyle(color: Colors.white),),
+                        children: snapshot.data!.map((model) {
+                          return ListTile(
+                            title: Text(model.name),
+                            leading: const Icon(
+                              Icons.file_present,
+                              color: Colors.red,
+                            ),
+                            trailing: IconButton(
+                                onPressed: () async {
+                                  await downloadFile(model.downloadUrl, context);
+                                },
+                                icon: const Icon(Icons.download)),
+                          );
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
-            const SizedBox(
-              height: 40,
-            ),
-            FutureBuilder(
-                future: getAssignments(context),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: Text('Assignments'),
-                      children: [
-                        ListTile(
-                          title: Center(child: CircularProgressIndicator()),
-                        )
-                      ],
-                    );
-                  } else if (!snapshot.hasData) {
-                    return const ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: Text('Assignments'),
-                      children: [
-                        ListTile(
-                          title: Text('No data'),
-                        )
-                      ],
-                    );
-                  } else {
-                    return ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: const Text('Assignments'),
-                      children: snapshot.data!.map((model) {
-                        String mark = '0';
-                        for (var i = 0; i < model.submissions.length; i++) {
-                          model.submissions[i]['regNo'] == studentData.regNo
-                              ? mark = model.submissions[i]['mark']
-                              : '0';
-                        }
-
-                        return ListTile(
-                          title: Text(model.title),
-                          subtitle: Text(model.description),
-                          trailing: Column(
-                            children: [
-                              Text(model.dueDate),
-                              Text(mark),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                },
-              ),
-              const SizedBox(
-                height: 2,
-              ),
-              FutureBuilder(
-                future: getSeriesTests(context),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: Text('Series Tests'),
-                      children: [
-                        ListTile(
-                          title: Center(child: CircularProgressIndicator()),
-                        )
-                      ],
-                    );
-                  } else if (!snapshot.hasData) {
-                    return const ExpansionTile(
-                      title: Text('Series Tests'),
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      children: [
-                        ListTile(
-                          title: Text('No data'),
-                        )
-                      ],
-                    );
-                  } else {
-                    return ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: const Text('Series Tests'),
-                      children: snapshot.data!.map((model) {
-                        String mark = '0';
-                        for (var i = 0; i < model.marks.length; i++) {
-                          model.marks[i]['regNo'] == studentData.regNo
-                              ? mark = model.marks[i]['mark']
-                              : '0';
-                        }
-                        return ListTile(
-                          title: Text(model.title),
-                          subtitle: Text(model.subjectName),
-                          trailing: Text(mark.toString()),
-                        );
-                      }).toList(),
-                    );
-                  }
-                },
-              ),
-              const SizedBox(
-                height: 2,
-              ),
-              FutureBuilder(
-                future: getStudyMaterials(context),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: Text('Study Materials'),
-                      children: [
-                        ListTile(
-                          title: Center(child: CircularProgressIndicator()),
-                        )
-                      ],
-                    );
-                  } else if (!snapshot.hasData) {
-                    return const ExpansionTile(
-                      title: Text('Study Materials'),
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      children: [
-                        ListTile(
-                          title: Text('No data'),
-                        )
-                      ],
-                    );
-                  } else {
-                    return ExpansionTile(
-                      collapsedBackgroundColor: Colors.deepPurpleAccent,
-                      title: const Text('Study Materials'),
-                      children: snapshot.data!.map((model) {
-                        return ListTile(
-                          title: Text(model.name),
-                          leading: const Icon(
-                            Icons.file_present,
-                            color: Colors.red,
-                          ),
-                          trailing: IconButton(
-                              onPressed: () async {
-                                await downloadFile(model.downloadUrl, context);
-                              },
-                              icon: const Icon(Icons.download)),
-                        );
-                      }).toList(),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
+        ),
         ),
       );
   }
